@@ -179,7 +179,7 @@ Le pipeline est défini dans [.github/workflows/ci.yml](.github/workflows/ci.yml
 - **SonarQube Cloud** : activé si la variable de dépôt `ACTIVATE_SONAR` est définie à `true`. À configurer :
   - **Secrets** : `SONAR_TOKEN` (jeton SonarCloud).
   - **Variables de dépôt** : `SONAR_PROJECT_KEY`, `SONAR_ORGANIZATION` (nom d’organisation SonarCloud).
-- **CD** : sur push vers `main` / `master` → build et publication des images Docker (front, back, standalone) vers GitHub Container Registry (GHCR).
+- **CD** : sur push vers `main` / `master` → build et publication des images Docker (front, back, standalone) vers Docker Hub. Configurer le secret `DOCKERHUB_TOKEN` et (optionnel) la variable `DOCKERHUB_USERNAME`.
 
 Aucun secret ne doit être stocké en clair ; utiliser les [secrets et variables GitHub](https://docs.github.com/en/actions/security-guides/encrypted-secrets).
 
@@ -206,16 +206,62 @@ Voir [docs/DOCKER-COMPOSE.md](docs/DOCKER-COMPOSE.md) pour les détails.
 
 ---
 
-## Stack ELK (monitoring des logs)
+## Lancer MicroCRM + ELK ensemble
 
-Pour centraliser les logs du back-end et les visualiser dans Kibana (tableaux de bord, erreurs, tendances) :
+Pour démarrer **l'application et la stack ELK** (Elasticsearch, Logstash, Kibana) en une seule commande, avec les logs du back-end centralisés dans Kibana :
+
+### Prérequis
+
+- Docker et Docker Compose installés.
+- Environ **4 Go RAM** disponibles pour la stack ELK.
+
+### Commande de lancement
 
 ```shell
-docker-compose -f docker-compose-elk.yml up
+docker-compose -f docker-compose.with-elk.yml up --build -d
 ```
 
-- **Kibana** : http://localhost:5601  
-- **Elasticsearch** : http://localhost:9200  
-- Prévoir environ **4 Go RAM**. Les logs du back sont envoyés à Logstash lorsque le profil Spring `elk` est actif.
+### URLs des services
 
-Voir [docs/ELK.md](docs/ELK.md) pour l’installation, la configuration et l’envoi des logs applicatifs.
+| Service | URL |
+|---------|-----|
+| **Application (front)** | http://localhost |
+| **API (back)** | http://localhost:8080 |
+| **Kibana** | http://localhost:5601 |
+| **Elasticsearch** | http://localhost:9200 |
+
+### Configurer Kibana pour voir les logs
+
+1. Ouvrir **http://localhost:5601** (attendre 1–2 min si Kibana démarre).
+2. Menu **☰** → **Stack Management** → **Data Views** → **Create data view**.
+3. **Name** : `MicroCRM Logs` | **Index pattern** : `microcrm-logs-*` | **Timestamp field** : `@timestamp` → **Save**.
+4. Menu **☰** → **Discover** → sélectionner la data view **MicroCRM Logs**.
+5. Utiliser l'application (http://localhost) pour générer des logs, puis rafraîchir Discover.
+
+### Arrêter et relancer
+
+```shell
+# Tout arrêter
+docker-compose -f docker-compose.with-elk.yml down
+
+# Relancer (sans rebuild)
+docker-compose -f docker-compose.with-elk.yml up -d
+```
+
+### Fichiers concernés
+
+- `docker-compose.with-elk.yml` : app (back, front) + ELK. Le back envoie ses logs à Logstash via le profil Spring `elk`.
+- `elk/logstash/pipeline/logstash.conf` : pipeline Logstash (réception logs TCP → Elasticsearch).
+
+<details>
+<summary>Option : ELK seul (sans application)</summary>
+
+```shell
+docker-compose -f docker-compose-elk.yml up -d
+```
+
+</details>
+
+Voir [docs/ELK.md](docs/ELK.md) pour plus de détails.
+
+
