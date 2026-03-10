@@ -132,6 +132,7 @@ jobs:
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
             -Dsonar.modules=back,front
+            -Dsonar.sources=
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.angular/**,**/*.spec.ts,**/build/**,**/target/**
             -Dback.sonar.projectName=Backend
             -Dback.sonar.sources=src/main/java
