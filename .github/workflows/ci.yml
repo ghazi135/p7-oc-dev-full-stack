@@ -77,11 +77,14 @@ jobs:
   # ---------- SonarQube Cloud (analyse qualité / sécurité) ----------
   # Activer en créant une variable de dépôt ACTIVATE_SONAR = 'true' et en renseignant
   # les secrets SONAR_TOKEN, et variables SONAR_PROJECT_KEY, SONAR_ORGANIZATION.
+  # Sur SonarCloud : désactiver "Automatic Analysis" (Administration projet ou organisation)
+  # pour éviter l'erreur "CI analysis while Automatic Analysis is enabled".
   sonarcloud:
     name: SonarQube Cloud
     runs-on: ubuntu-latest
     needs: [back-build-test, front-build-test]
     if: vars.ACTIVATE_SONAR == 'true'
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
