@@ -76,12 +76,8 @@ jobs:
           CHROME_BIN: /usr/bin/google-chrome-stable
 
   # ---------- SonarQube Cloud (analyse qualité / sécurité) ----------
-  # Activer : ACTIVATE_SONAR='true', SONAR_TOKEN (secret), SONAR_ORGANIZATION (variable).
-  # Créer 2 projets SonarCloud pour couverture séparée back/front :
-  #   - <org>_<repo>-back   (ex. ghazi135_p7-oc-dev-full-stack-back)
-  #   - <org>_<repo>-front  (ex. ghazi135_p7-oc-dev-full-stack-front)
-  # Ou définir SONAR_PROJECT_KEY_BACK et SONAR_PROJECT_KEY_FRONT.
-  # Désactiver "Automatic Analysis" sur SonarCloud pour chaque projet.
+  # Un seul projet SonarCloud (même repo = back + front). Modules pour couverture séparée.
+  # Activer : ACTIVATE_SONAR='true', SONAR_TOKEN (secret), SONAR_PROJECT_KEY, SONAR_ORGANIZATION (variables).
   sonarcloud:
     name: SonarQube Cloud
     runs-on: ubuntu-latest
@@ -126,34 +122,26 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome-stable
 
-      - name: SonarQube Cloud Scan – Backend (Java)
+      - name: SonarQube Cloud Scan (1 projet, modules back + front)
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
         with:
           args: >
-            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY_BACK || format('{0}-back', vars.SONAR_PROJECT_KEY) }}
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
-            -Dsonar.projectBaseDir=back
-            -Dsonar.sources=src/main/java
-            -Dsonar.java.binaries=build/classes/java/main
-            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
-            -Dsonar.exclusions=**/build/**
-
-      - name: SonarQube Cloud Scan – Frontend (Angular)
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
-        with:
-          args: >
-            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY_FRONT || format('{0}-front', vars.SONAR_PROJECT_KEY) }}
-            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
-            -Dsonar.projectBaseDir=front
-            -Dsonar.sources=src
-            -Dsonar.javascript.lcov.reportPaths=coverage/microcrm/lcov.info
-            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.angular/**,**/*.spec.ts
+            -Dsonar.modules=back,front
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.angular/**,**/*.spec.ts,**/build/**,**/target/**
+            -Dback.sonar.projectName=Backend
+            -Dback.sonar.sources=src/main/java
+            -Dback.sonar.projectBaseDir=back
+            -Dback.sonar.java.binaries=build/classes/java/main
+            -Dback.sonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+            -Dfront.sonar.projectName=Frontend
+            -Dfront.sonar.sources=src
+            -Dfront.sonar.projectBaseDir=front
+            -Dfront.sonar.javascript.lcov.reportPaths=coverage/microcrm/lcov.info
 
   # ---------- CD : build et push des images Docker vers Docker Hub (main/master) ----------
   docker-build-push:
