@@ -76,10 +76,12 @@ jobs:
           CHROME_BIN: /usr/bin/google-chrome-stable
 
   # ---------- SonarQube Cloud (analyse qualité / sécurité) ----------
-  # Activer en créant une variable de dépôt ACTIVATE_SONAR = 'true' et en renseignant
-  # les secrets SONAR_TOKEN, et variables SONAR_PROJECT_KEY, SONAR_ORGANIZATION.
-  # Sur SonarCloud : désactiver "Automatic Analysis" (Administration projet ou organisation)
-  # pour éviter l'erreur "CI analysis while Automatic Analysis is enabled".
+  # Activer : ACTIVATE_SONAR='true', SONAR_TOKEN (secret), SONAR_ORGANIZATION (variable).
+  # Créer 2 projets SonarCloud pour couverture séparée back/front :
+  #   - <org>_<repo>-back   (ex. ghazi135_p7-oc-dev-full-stack-back)
+  #   - <org>_<repo>-front  (ex. ghazi135_p7-oc-dev-full-stack-front)
+  # Ou définir SONAR_PROJECT_KEY_BACK et SONAR_PROJECT_KEY_FRONT.
+  # Désactiver "Automatic Analysis" sur SonarCloud pour chaque projet.
   sonarcloud:
     name: SonarQube Cloud
     runs-on: ubuntu-latest
@@ -124,20 +126,34 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome-stable
 
-      - name: SonarQube Cloud Scan
+      - name: SonarQube Cloud Scan – Backend (Java)
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
         with:
           args: >
-            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY_BACK || format('{0}-back', vars.SONAR_PROJECT_KEY) }}
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
-            -Dsonar.sources=back/src/main/java,front/src
-            -Dsonar.java.binaries=back/build/classes/java/main
-            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.angular/**,**/*.spec.ts,**/build/**,**/target/**
-            -Dsonar.coverage.jacoco.xmlReportPaths=back/build/reports/jacoco/test/jacocoTestReport.xml
-            -Dsonar.javascript.lcov.reportPaths=front/coverage/microcrm/lcov.info
+            -Dsonar.projectBaseDir=back
+            -Dsonar.sources=src/main/java
+            -Dsonar.java.binaries=build/classes/java/main
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+            -Dsonar.exclusions=**/build/**
+
+      - name: SonarQube Cloud Scan – Frontend (Angular)
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY_FRONT || format('{0}-front', vars.SONAR_PROJECT_KEY) }}
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.projectBaseDir=front
+            -Dsonar.sources=src
+            -Dsonar.javascript.lcov.reportPaths=coverage/microcrm/lcov.info
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.angular/**,**/*.spec.ts
 
   # ---------- CD : build et push des images Docker vers Docker Hub (main/master) ----------
   docker-build-push:
