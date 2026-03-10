@@ -133,11 +133,13 @@ jobs:
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
             -Dsonar.modules=back,front
             -Dsonar.sources=
+            -Dsonar.java.libraries=
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.angular/**,**/*.spec.ts,**/build/**,**/target/**
             -Dback.sonar.projectName=Backend
             -Dback.sonar.sources=src/main/java
             -Dback.sonar.projectBaseDir=back
             -Dback.sonar.java.binaries=build/classes/java/main
+            -Dback.sonar.java.libraries=build/libs/*.jar
             -Dback.sonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
             -Dfront.sonar.projectName=Frontend
             -Dfront.sonar.sources=src
