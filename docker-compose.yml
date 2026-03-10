@@ -1,0 +1,45 @@
+# Docker Compose – MicroCRM (P7)
+# Orchestration des services pour exécution locale.
+# Usage : docker-compose up
+# Front : http://localhost (port 80) ou https://localhost (443)
+# Back  : http://localhost:8080
+
+services:
+  back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: back
+    image: orion-microcrm-back:latest
+    ports:
+      - "8080:8080"
+    # Pas de volume ni de données sensibles dans l’image (HSQLDB en mémoire).
+
+  front:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: front
+    image: orion-microcrm-front:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - back
+    # L’app front est compilée avec API_BASE_URL = http://localhost:8080,
+    # donc le navigateur (client) appelle l’API sur le port exposé de l’hôte.
+
+  # Option tout-en-un (front + back dans une seule image, Supervisord)
+  standalone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: standalone
+    image: orion-microcrm-standalone:latest
+    ports:
+      - "8080:8080"
+      - "80:80"
+      - "443:443"
+    profiles:
+      - full
+    # Usage : docker-compose --profile full up standalone
