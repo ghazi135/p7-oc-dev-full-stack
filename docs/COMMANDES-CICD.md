@@ -31,9 +31,9 @@ Documentation des commandes importantes : **objectif**, **où elles sont défini
 
 | Job / step | Objectif | Où défini | Quand exécuté |
 |------------|----------|-----------|----------------|
-| **Backend – Build & Tests** | Build Gradle + tests back, upload du JAR en artifact | `.github/workflows/ci.yml` | À chaque push et pull request sur `main` / `master` |
-| **Frontend – Build & Tests** | npm ci, build Angular, tests Karma (Chrome headless) | `.github/workflows/ci.yml` | À chaque push et pull request sur `main` / `master` |
-| **SonarQube Cloud** | Analyse statique qualité / sécurité (bugs, vulnérabilités, code smells) | `.github/workflows/ci.yml` | Si la variable de dépôt `ACTIVATE_SONAR` = `true` (après succès des jobs back et front) |
+| **Backend – Build & Tests** | Build Gradle + tests back, upload du JAR en artifact | `.github/workflows/ci-cd.yml` | À chaque push et pull request sur `main` / `master` |
+| **Frontend – Build & Tests** | npm ci, build Angular, tests Karma (Chrome headless) | `.github/workflows/ci-cd.yml` | À chaque push et pull request sur `main` / `master` |
+| **SonarQube Cloud** | Analyse statique qualité / sécurité (bugs, vulnérabilités, code smells) | `.github/workflows/ci-cd.yml` | Si la variable de dépôt `ACTIVATE_SONAR` = `true` (après succès des jobs back et front) |
 
 ---
 
@@ -41,7 +41,7 @@ Documentation des commandes importantes : **objectif**, **où elles sont défini
 
 | Job / step | Objectif | Où défini | Quand exécuté |
 |------------|----------|-----------|----------------|
-| **Build & Push Docker images** | Construire les images front, back, standalone et les pousser vers GitHub Container Registry (GHCR) | `.github/workflows/ci.yml` | Uniquement sur **push** vers `main` ou `master` (pas sur pull request) |
+| **Build & Push Docker images** | Construire les images front, back, standalone et les pousser vers GitHub Container Registry (GHCR) | `.github/workflows/ci-cd.yml` | Uniquement sur **push** vers `main` ou `master` (pas sur pull request) |
 
 Les images sont publiées avec les tags `latest` et le SHA du commit.
 

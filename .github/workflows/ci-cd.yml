@@ -1,30 +1,45 @@
-# Pipeline CI/CD – MicroCRM (P7)
-# Étape 3 : CI (build, tests, SonarQube Cloud)
-# Étape 5 : CD (publication des images Docker sur GHCR)
+# =============================================================================
+# Pipeline CI/CD – MicroCRM (P7) – Option B (Orion)
+# =============================================================================
+# Ce workflow assure :
+#   - CI : build et tests (backend Java + frontend Angular) à chaque push/PR
+#   - Analyse qualité/sécurité : SonarQube Cloud (optionnel, si ACTIVATE_SONAR=true)
+#   - CD : build et publication des images Docker vers Docker Hub (uniquement sur push main/master)
+# =============================================================================
 
 name: CI/CD
 
+# -----------------------------------------------------------------------------
+# Déclencheurs : quand le pipeline s'exécute
+# -----------------------------------------------------------------------------
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
 
+# -----------------------------------------------------------------------------
+# Variables d'environnement globales (réutilisées dans les jobs)
+# -----------------------------------------------------------------------------
 env:
   JAVA_VERSION: "17"
   NODE_VERSION: "20"
-  # Docker Hub : définir les variables DOCKERHUB_USERNAME et le secret DOCKERHUB_TOKEN
+  # Registre Docker : Docker Hub (docker.io). Pour GHCR : ghcr.io
   DOCKER_REGISTRY: docker.io
 
 jobs:
-  # ---------- Backend : build et tests ----------
+  # ===========================================================================
+  # JOB 1 : Backend – Build et tests (Java / Spring Boot / Gradle)
+  # ===========================================================================
   back-build-test:
     name: Backend – Build & Tests
     runs-on: ubuntu-latest
     steps:
+      # Récupération du code source depuis le dépôt
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Installation du JDK 17 (Temurin) avec cache Gradle pour accélérer les runs suivants
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -32,19 +47,24 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: "gradle"
 
+      # gradlew doit être exécutable sur l'environnement Linux du runner
       - name: Grant execute permission for gradlew
         run: chmod +x back/gradlew
 
+      # Compilation, exécution des tests JUnit et génération du JAR (+ rapport JaCoCo si configuré dans build.gradle)
       - name: Build and test (Gradle)
         run: cd back && ./gradlew build --no-daemon
 
+      # Sauvegarde du JAR en artifact (disponible pour les jobs suivants si besoin ; CD rebuild depuis les sources)
       - name: Upload JAR (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: back-jar
           path: back/build/libs/microcrm-*.jar
 
-  # ---------- Frontend : build et tests ----------
+  # ===========================================================================
+  # JOB 2 : Frontend – Build et tests (Angular / npm / Karma)
+  # ===========================================================================
   front-build-test:
     name: Frontend – Build & Tests
     runs-on: ubuntu-latest
@@ -52,6 +72,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Node.js 20 avec cache npm (package-lock.json du front uniquement)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -59,25 +80,31 @@ jobs:
           cache: "npm"
           cache-dependency-path: front/package-lock.json
 
+      # Karma/Jasmine nécessitent un navigateur : Chrome headless pour les tests sans interface
       - name: Install Chrome (headless)
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
+      # Installation reproductible des dépendances (utilise package-lock.json)
       - name: Install dependencies
         run: cd front && npm ci
 
+      # Build de production (optimisation, assets)
       - name: Build (production)
         run: cd front && npm run build
 
+      # Tests unitaires en mode headless ; pas de watch pour la CI
       - name: Run unit tests
         run: cd front && npm test -- --no-watch --browsers=ChromeHeadlessNoSandbox
         env:
           CHROME_BIN: /usr/bin/google-chrome-stable
 
-  # ---------- SonarQube Cloud (analyse qualité / sécurité) ----------
-  # Un seul projet SonarCloud (même repo = back + front). Modules pour couverture séparée.
-  # Activer : ACTIVATE_SONAR='true', SONAR_TOKEN (secret), SONAR_PROJECT_KEY, SONAR_ORGANIZATION (variables).
+  # ===========================================================================
+  # JOB 3 : SonarQube Cloud – Analyse statique (qualité, sécurité, couverture)
+  # ===========================================================================
+  # Exécuté seulement si la variable de dépôt ACTIVATE_SONAR = 'true'
+  # Dépend des jobs back et front : on rebuilde ici pour générer les rapports de couverture (JaCoCo, LCOV)
   sonarcloud:
     name: SonarQube Cloud
     runs-on: ubuntu-latest
@@ -90,6 +117,7 @@ jobs:
         with:
           fetch-depth: 0
 
+      # --- Backend : build + rapport JaCoCo pour la couverture SonarQube ---
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -102,6 +130,7 @@ jobs:
           chmod +x back/gradlew
           cd back && ./gradlew build jacocoTestReport --no-daemon
 
+      # --- Frontend : build + tests avec couverture LCOV ---
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -122,6 +151,8 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome-stable
 
+      # --- Scan SonarQube : 1 projet, 2 modules (back, front) pour rapports séparés ---
+      # Configurer : Secrets → SONAR_TOKEN ; Variables → SONAR_PROJECT_KEY, SONAR_ORGANIZATION, ACTIVATE_SONAR
       - name: SonarQube Cloud Scan (1 projet, modules back + front)
         uses: SonarSource/sonarqube-scan-action@v6
         env:
@@ -146,7 +177,12 @@ jobs:
             -Dfront.sonar.projectBaseDir=front
             -Dfront.sonar.javascript.lcov.reportPaths=coverage/microcrm/lcov.info
 
-  # ---------- CD : build et push des images Docker vers Docker Hub (main/master) ----------
+  # ===========================================================================
+  # JOB 4 : CD – Build et push des images Docker vers Docker Hub
+  # ===========================================================================
+  # Exécuté uniquement sur push vers main ou master (pas sur pull request)
+  # Construit les 3 cibles du Dockerfile : front, back, standalone
+  # Configurer : Secrets → DOCKERHUB_TOKEN ; Variables (optionnel) → DOCKERHUB_USERNAME
   docker-build-push:
     name: Build & Push Docker images
     runs-on: ubuntu-latest
@@ -158,9 +194,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Buildx permet le build multi-plateforme et le cache (type=gha)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Authentification au registre (Docker Hub)
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -168,6 +206,7 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME || github.repository_owner }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # --- Image Frontend (cible "front" du Dockerfile) ---
       - name: Extract metadata (front)
         id: meta-front
         uses: docker/metadata-action@v5
@@ -189,6 +228,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # --- Image Backend (cible "back" du Dockerfile) ---
       - name: Extract metadata (back)
         id: meta-back
         uses: docker/metadata-action@v5
@@ -210,6 +250,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # --- Image Standalone (front + back dans un seul conteneur, cible "standalone") ---
       - name: Extract metadata (standalone)
         id: meta-standalone
         uses: docker/metadata-action@v5

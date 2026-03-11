@@ -11,6 +11,29 @@ L'application MicroCRM est une implémentation simplifiée d'un ["CRM" (Customer
 ![Page d'accueil](./misc/screenshots/screenshot_1.png)
 ![Édition de la fiche d'un individu](./misc/screenshots/screenshot_2.png)
 
+---
+
+## Livrables mission P7 (soutenance)
+
+| Livrable | Emplacement |
+|----------|-------------|
+| **Workflow CI/CD** | [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml) |
+| **Dockerfile(s)** | [Dockerfile](Dockerfile) à la racine (multi-cibles : `front`, `back`, `standalone`) |
+| **README** | Ce fichier : choix techniques et instructions d'exécution ci-dessous |
+| **Documentation CI/CD complète** | [docs/DOCUMENTATION-CICD-LIVRABLE.md](docs/DOCUMENTATION-CICD-LIVRABLE.md) (Partie 1 : mise en œuvre, conteneurisation, testing ; Partie 2 : KPI, métriques, sécurité, sauvegarde, mises à jour) |
+| **Présentation soutenance** | [docs/PRESENTATION-SOUTENANCE-P7.md](docs/PRESENTATION-SOUTENANCE-P7.md) (structure type slides pour 15 min) |
+
+---
+
+## Choix techniques (CI/CD et conteneurisation)
+
+- **Pipeline** : GitHub Actions (`.github/workflows/ci-cd.yml`) — CI sur chaque push/PR (build back + front, tests JUnit et Karma), analyse SonarCloud si activée, CD sur `main`/`master` (build et push des images Docker vers Docker Hub).
+- **Conteneurisation** : un seul Dockerfile multi-étapes (Alpine) — cibles `front` (Caddy), `back` (JRE 17), `standalone` (Supervisord) pour limiter la taille et la surface d’attaque.
+- **Qualité** : tests automatiques (back + front) et SonarQube Cloud (qualité, sécurité, couverture) ; secrets et variables via GitHub (aucun secret en clair).
+- **Registre** : publication des images sur Docker Hub (config : `DOCKERHUB_TOKEN`, `DOCKERHUB_USERNAME`).
+
+---
+
 ## Code source
 
 ### Organisation
@@ -158,6 +181,7 @@ L'application sera disponible sur https://localhost et l'API sur http://localhos
 
 ## Documentation (mission P7)
 
+- **[Documentation CI/CD complète (livrable soutenance)](docs/DOCUMENTATION-CICD-LIVRABLE.md)** : Partie 1 (étapes CI/CD, conteneurisation, testing) et Partie 2 (KPI, métriques, sécurité, sauvegarde, mises à jour).
 - **[Étape 1 – Analyse du dépôt et veille](docs/ETAPE1-ANALYSE.md)** : structure du projet, commandes de build/tests, contraintes CI/CD.
 - **[Plans CI/CD (étape 2)](docs/PLANS-CICD.md)** : plan de testing, plan de sécurité, principes de conteneurisation et déploiement.
 - **[Docker Compose](docs/DOCKER-COMPOSE.md)** : orchestration des services, lancement avec `docker-compose up`.
@@ -173,7 +197,7 @@ L'application sera disponible sur https://localhost et l'API sur http://localhos
 
 ## CI/CD (GitHub Actions)
 
-Le pipeline est défini dans [.github/workflows/ci.yml](.github/workflows/ci.yml) :
+Le pipeline est défini dans [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml) :
 
 - **CI** : à chaque push et pull request → build back + front, exécution des tests (JUnit, Karma).
 - **SonarQube Cloud** : activé si la variable de dépôt `ACTIVATE_SONAR` est définie à `true`. À configurer :
