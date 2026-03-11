@@ -233,14 +233,7 @@ Le pipeline est défini dans [.github/workflows/ci-cd.yml](.github/workflows/ci-
   - **Secrets** : `SONAR_TOKEN` (jeton SonarCloud).
   - **Variables de dépôt** : `SONAR_PROJECT_KEY`, `SONAR_ORGANIZATION` (nom d’organisation SonarCloud).
 - **CD** : sur push vers `main` / `master` → build et publication des images Docker (front, back, standalone) vers Docker Hub. Configurer le secret `DOCKERHUB_TOKEN` et (optionnel) la variable `DOCKERHUB_USERNAME`.
-- **Release** : à chaque push d’un **tag** `vX.Y.Z` (ex. `v1.0.0`) → workflow [.github/workflows/release.yml](.github/workflows/release.yml) → création automatique d’une release GitHub avec les artefacts : **JAR** (backend) et **build Angular** (frontend, zip).
-
-**Créer une release :** créer et pousser un tag depuis la branche `main` ou `master` :
-```shell
-git tag v1.0.0
-git push origin v1.0.0
-```
-La release apparaît dans l’onglet **Releases** du dépôt avec le JAR et l’archive frontend en pièces jointes.
+- **Release** : après le CD (push sur `main`/`master`), le workflow crée automatiquement un **tag** `vX.Y.Z` (lecture de la version dans `back/build.gradle`, sans `-SNAPSHOT`) et une **release GitHub** avec les artefacts : **JAR** (backend) et **build Angular** (frontend, zip). Si le tag existe déjà, l’étape release est ignorée. Pour publier une nouvelle version, incrémenter `version` dans `back/build.gradle` puis pousser sur `main`/`master`.
 
 Aucun secret ne doit être stocké en clair ; utiliser les [secrets et variables GitHub](https://docs.github.com/en/actions/security-guides/encrypted-secrets).
 
