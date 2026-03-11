@@ -212,7 +212,8 @@ L'application sera disponible sur https://localhost et l'API sur http://localhos
 
 ## Documentation (mission P7)
 
-- **[Documentation CI/CD complète (livrable soutenance)](docs/DOCUMENTATION-CICD-LIVRABLE.md)** : Partie 1 (étapes CI/CD, conteneurisation, testing) et Partie 2 (KPI, métriques, sécurité, sauvegarde, mises à jour) ; inclut la référence des commandes.
+- **[Documentation CI/CD complète (livrable soutenance)](docs/DOCUMENTATION-CICD-LIVRABLE.md)**  
+- **[Documentation technique (structure template P7 ODT)](docs/DOCUMENTATION-TECHNIQUE-TEMPLATE-P7.md)** : même plan que le template fourni (Template documentation P7-FS.odt), avec renvois vers les docs du projet.
 - **[Plans CI/CD](docs/PLANS-CICD.md)** : plan de testing, plan de sécurité, principes de conteneurisation et déploiement.
 - **[Docker Compose](docs/DOCKER-COMPOSE.md)** : orchestration des services, lancement avec `docker-compose up`.
 - **[Stack ELK](docs/ELK.md)** : centralisation des logs (Elasticsearch, Logstash, Kibana), dashboards.
