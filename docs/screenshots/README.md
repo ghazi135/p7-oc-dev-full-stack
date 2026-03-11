@@ -6,4 +6,4 @@ Placez ici les captures d'écran pour illustrer la documentation technique final
 - **Résultats SonarQube** : Quality Gate, métriques (bugs, vulnérabilités, couverture).
 - **GitHub Actions** : exemples de runs du pipeline (build, tests, CD).
 
-Référencez ensuite ces images dans [DOCUMENTATION-TECHNIQUE-FINALE.md](../DOCUMENTATION-TECHNIQUE-FINALE.md) (section 2.4 Dashboards ELK / Kibana).
+Référencez ces images dans [DOCUMENTATION-CICD-LIVRABLE.md](../DOCUMENTATION-CICD-LIVRABLE.md) (§ 5 analyse des métriques, dashboards Kibana).

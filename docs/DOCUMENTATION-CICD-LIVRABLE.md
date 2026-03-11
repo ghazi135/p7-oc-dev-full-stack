@@ -19,7 +19,7 @@ Ce document constitue le **livrable documentation** pour la soutenance. Il regro
 | **Partie 2** | Le plan de sauvegarde des données | **§ 7** – Le plan de sauvegarde des données |
 | **Partie 2** | Le plan des mises à jour | **§ 8** – Le plan des mises à jour |
 
-**Un seul document** : [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) (ce fichier) constitue à lui seul la **documentation de CI/CD complète** demandée (Partie 1 + Partie 2). Documents complémentaires : [PRESENTATION-SOUTENANCE-P7.md](PRESENTATION-SOUTENANCE-P7.md), [VERIFICATION-AUTO-EVALUATION-P7.md](VERIFICATION-AUTO-EVALUATION-P7.md). Détails par thème : [PLANS-CICD.md](PLANS-CICD.md), [PLAN-SECURITE-FINAL.md](PLAN-SECURITE-FINAL.md), [PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md), [METRIQUES-DORA-KPI.md](METRIQUES-DORA-KPI.md), [DOCUMENTATION-TECHNIQUE-FINALE.md](DOCUMENTATION-TECHNIQUE-FINALE.md), [DOCKER-COMPOSE.md](DOCKER-COMPOSE.md), [ELK.md](ELK.md).
+**Un seul document** : ce fichier constitue la **documentation de CI/CD complète** (Partie 1 + Partie 2). Compléments : [PRESENTATION-SOUTENANCE-P7.md](PRESENTATION-SOUTENANCE-P7.md), [VERIFICATION-AUTO-EVALUATION-P7.md](VERIFICATION-AUTO-EVALUATION-P7.md).
 
 ---
 
@@ -108,7 +108,7 @@ docker-compose --profile full up standalone --build
 - **CD** : sur branche `main`/`master` → build des images (front, back, standalone) et **publication vers Docker Hub**.
 - **Tags d’images** : `latest` pour la dernière version sur `main` ; possibilité d’ajouter le SHA du commit ou un numéro de version pour la traçabilité.
 
-Le détail des procédures (ordre de déploiement, vérifications, variables d’environnement) est dans [PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md#1-plan-de-déploiement).
+Ordre : récupération des images ou build local → `docker-compose up -d` (back puis front) ; vérification des URLs (API, front) ; variables d’environnement en production via le déploiement (pas de secrets dans les images).
 
 ---
 
@@ -140,7 +140,6 @@ Les rapports de couverture sont utilisés par SonarQube :
 - **Non-régression** : à chaque modification, l’ensemble des tests doit rester vert ; un échec bloque la suite du pipeline.
 - **Qualité** : le build et les tests sont un préalable à l’analyse SonarQube.
 
-Le plan détaillé est décrit dans [PLANS-CICD.md](PLANS-CICD.md#1-plan-de-testing-périodique).
 
 ---
 
@@ -167,7 +166,6 @@ Le plan détaillé est décrit dans [PLANS-CICD.md](PLANS-CICD.md#1-plan-de-test
 | **Qualité SonarQube** | Statut du Quality Gate et nombre d’issues. | Résultats SonarCloud sur les PR/push. | Maintenir le gate vert. |
 | **Fréquence des erreurs (logs)** | Nombre d’événements ERROR dans les logs. | Comptage dans ELK/Kibana (index `microcrm-logs-*`). | Détecter les pics et corriger. |
 
-Le tableau détaillé et les formules sont dans [METRIQUES-DORA-KPI.md](METRIQUES-DORA-KPI.md).
 
 ---
 
@@ -177,7 +175,7 @@ Le tableau détaillé et les formules sont dans [METRIQUES-DORA-KPI.md](METRIQUE
 - **Qualité** : les métriques SonarQube (bugs, vulnérabilités, code smells) et le taux de succès des tests sont des indicateurs de la **Change Failure Rate** potentielle : moins d’anomalies et des tests systématiques limitent les déploiements défaillants.
 - **Monitoring** : les indicateurs ELK (volume de logs, erreurs, tendances) permettent de relier les incidents au comportement de l’application et d’alimenter une estimation du **MTTR**.
 
-Cette analyse est à mettre à jour après chaque période d’observation (sprint, lot de déploiements). La synthèse et les recommandations sont dans [DOCUMENTATION-TECHNIQUE-FINALE.md](DOCUMENTATION-TECHNIQUE-FINALE.md).
+Cette analyse est à mettre à jour après chaque période d’observation (sprint, lot de déploiements).
 
 ---
 
@@ -213,7 +211,6 @@ Références : [SonarSource Rules](https://rules.sonarsource.com/), [OWASP Top 1
 3. Réduire les **duplications** et la **complexité** (refactoring ciblé).  
 4. Exécuter **npm audit** (front) et un audit des dépendances back (ex. OWASP Dependency Check) en CI.
 
-Le plan détaillé est dans [PLAN-SECURITE-FINAL.md](PLAN-SECURITE-FINAL.md).
 
 ---
 
@@ -235,7 +232,6 @@ Le plan détaillé est dans [PLAN-SECURITE-FINAL.md](PLAN-SECURITE-FINAL.md).
 
 Pour une future base de données persistante : définir des sauvegardes régulières (dumps) et une procédure de restauration (répertoire, fréquence, rétention).
 
-Le détail est dans [PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md#2-plan-de-sauvegarde).
 
 ---
 
@@ -258,7 +254,20 @@ Le détail est dans [PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](PLANS-DEPLOIEM
 - **Non-régression** : toute mise à jour (code, dépendances, images) doit passer par le pipeline (build, tests, analyse qualité) avant déploiement.
 - **Traçabilité** : versions et changements documentés dans le dépôt (commits, tags, release notes si applicable).
 
-Le détail est dans [PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md#3-plan-de-mise-à-jour).
+---
+
+## 9. Conclusion et recommandations
+
+| Priorité | Recommandation | Justification |
+|----------|----------------|---------------|
+| 1 | Maintenir les **tests automatisés** et le **Quality Gate** SonarQube. | Réduction de la Change Failure Rate et détection des régressions. |
+| 2 | Corriger les **vulnérabilités** et **issues critiques** SonarQube. | Conformité au plan de sécurité. |
+| 3 | Augmenter la **couverture de tests** sur les parties métier. | Meilleure confiance lors des mises à jour. |
+| 4 | Suivre les **KPI** et **métriques DORA** sur plusieurs sprints. | Identifier les goulots et tendances. |
+| 5 | Utiliser les **logs ELK** (si déployé) pour relier erreurs et zones de code signalées par SonarQube. | Priorisation des corrections. |
+| 6 | Mettre à jour régulièrement **dépendances** et **images de base** (Gradle, npm, Docker). | Limitation des CVE. |
+
+**Résumé** : Pipeline reproductible (workflow, Docker, secrets gérés) ; toute évolution doit passer par le pipeline avant déploiement.
 
 ---
 

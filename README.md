@@ -212,16 +212,10 @@ L'application sera disponible sur https://localhost et l'API sur http://localhos
 
 ## Documentation (mission P7)
 
-- **[Documentation CI/CD complète (livrable soutenance)](docs/DOCUMENTATION-CICD-LIVRABLE.md)**  
-- **[Documentation technique (structure template P7 ODT)](docs/DOCUMENTATION-TECHNIQUE-TEMPLATE-P7.md)** : même plan que le template fourni (Template documentation P7-FS.odt), avec renvois vers les docs du projet.
-- **[Plans CI/CD](docs/PLANS-CICD.md)** : plan de testing, plan de sécurité, principes de conteneurisation et déploiement.
-- **[Docker Compose](docs/DOCKER-COMPOSE.md)** : orchestration des services, lancement avec `docker-compose up`.
-- **[Stack ELK](docs/ELK.md)** : centralisation des logs (Elasticsearch, Logstash, Kibana), dashboards.
-- **[Métriques DORA et KPI](docs/METRIQUES-DORA-KPI.md)** : indicateurs de performance du pipeline et analyse.
-- **[Plan de sécurité (finalisé)](docs/PLAN-SECURITE-FINAL.md)** : vulnérabilités, SonarQube, recommandations.
-- **[Plans déploiement, sauvegarde, mise à jour](docs/PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md)** : procédures et bonnes pratiques.
-- **[Documentation technique finale](docs/DOCUMENTATION-TECHNIQUE-FINALE.md)** : synthèse métriques, KPI, recommandations.
-- **[Vérification auto-évaluation P7](docs/VERIFICATION-AUTO-EVALUATION-P7.md)** : grille de vérification par rapport au livrable attendu.
+- **[Documentation CI/CD complète](docs/DOCUMENTATION-CICD-LIVRABLE.md)** : livrable principal (Partie 1 + Partie 2 : étapes CI/CD, conteneurisation, testing, KPI, métriques, sécurité, sauvegarde, mises à jour, conclusion).
+- **[Présentation soutenance](docs/PRESENTATION-SOUTENANCE-P7.md)** : structure type slides pour l’oral.
+- **[Vérification auto-évaluation P7](docs/VERIFICATION-AUTO-EVALUATION-P7.md)** : grille FAE (où trouver chaque indicateur).
+- **Captures** : `docs/screenshots/` (SonarQube, Kibana, GitHub Actions).
 
 ---
 
