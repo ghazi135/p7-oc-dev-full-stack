@@ -1,0 +1,73 @@
+# =============================================================================
+# Release GitHub – MicroCRM (P7)
+# =============================================================================
+# Création automatique d'une release lorsque un tag vX.Y.Z est poussé.
+# Artefacts attachés : JAR (backend) + build Angular (frontend, zip).
+# =============================================================================
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "gradle"
+
+      - name: Build backend (JAR)
+        run: |
+          chmod +x back/gradlew
+          cd back && ./gradlew build --no-daemon -x test
+
+      - name: Copy JAR for release
+        run: |
+          mkdir -p release
+          cp back/build/libs/microcrm-*.jar release/microcrm.jar
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: front/package-lock.json
+
+      - name: Build frontend (Angular)
+        run: cd front && npm ci && npm run build
+
+      - name: Prepare frontend archive
+        run: |
+          if [ -d front/dist/microcrm/browser ]; then
+            (cd front/dist/microcrm/browser && zip -r ../../../../front-dist.zip . -x "*.map")
+          else
+            (cd front/dist/microcrm && zip -r ../../../front-dist.zip . -x "*.map")
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            release/microcrm.jar
+            front-dist.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
