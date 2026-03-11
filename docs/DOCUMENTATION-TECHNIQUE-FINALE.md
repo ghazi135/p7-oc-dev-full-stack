@@ -8,9 +8,8 @@ Ce document compile les **métriques DORA**, les **KPI**, les **résultats Sonar
 
 | Document | Contenu |
 |----------|--------|
-| [ETAPE1-ANALYSE.md](ETAPE1-ANALYSE.md) | Structure du dépôt, build, tests, veille technologique. |
+| [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) | Étapes CI/CD, conteneurisation, testing, KPI, sécurité, sauvegarde, mises à jour (livrable soutenance). |
 | [PLANS-CICD.md](PLANS-CICD.md) | Plan de testing périodique, plan de sécurité (CI), conteneurisation et déploiement. |
-| [COMMANDES-CICD.md](COMMANDES-CICD.md) | Référence des commandes (objectif, où définies, quand exécutées). |
 | [DOCKER-COMPOSE.md](DOCKER-COMPOSE.md) | Orchestration des services, docker-compose, image standalone. |
 | [ELK.md](ELK.md) | Stack ELK, centralisation des logs, dashboards Kibana. |
 | [METRIQUES-DORA-KPI.md](METRIQUES-DORA-KPI.md) | Métriques DORA, KPI opérationnels, analyse. |

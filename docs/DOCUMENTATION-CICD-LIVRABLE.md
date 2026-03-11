@@ -6,6 +6,21 @@
 
 Ce document constitue le **livrable documentation** pour la soutenance. Il regroupe la Partie 1 (mise en œuvre CI/CD, conteneurisation, testing) et la Partie 2 (KPI, métriques, sécurité, sauvegarde, mises à jour).
 
+### Correspondance avec la mission : « Une documentation de CI/CD complète contenant »
+
+| Partie | Élément demandé | Où dans ce document |
+|--------|-----------------|----------------------|
+| **Partie 1** | Les étapes de mise en œuvre CI/CD | **§ 1** – Les étapes de mise en œuvre CI/CD |
+| **Partie 1** | Le plan de conteneurisation et déploiement | **§ 2** – Le plan de conteneurisation et déploiement |
+| **Partie 1** | Le plan de testing périodique | **§ 3** – Le plan de testing périodique |
+| **Partie 2** | Les KPI proposés et les métriques | **§ 4** – Les KPI proposés et les métriques |
+| **Partie 2** | L'analyse des métriques | **§ 5** – L'analyse des métriques |
+| **Partie 2** | Le plan de sécurité | **§ 6** – Le plan de sécurité |
+| **Partie 2** | Le plan de sauvegarde des données | **§ 7** – Le plan de sauvegarde des données |
+| **Partie 2** | Le plan des mises à jour | **§ 8** – Le plan des mises à jour |
+
+**Un seul document** : [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) (ce fichier) constitue à lui seul la **documentation de CI/CD complète** demandée (Partie 1 + Partie 2). Documents complémentaires : [PRESENTATION-SOUTENANCE-P7.md](PRESENTATION-SOUTENANCE-P7.md), [VERIFICATION-AUTO-EVALUATION-P7.md](VERIFICATION-AUTO-EVALUATION-P7.md). Détails par thème : [PLANS-CICD.md](PLANS-CICD.md), [PLAN-SECURITE-FINAL.md](PLAN-SECURITE-FINAL.md), [PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md), [METRIQUES-DORA-KPI.md](METRIQUES-DORA-KPI.md), [DOCUMENTATION-TECHNIQUE-FINALE.md](DOCUMENTATION-TECHNIQUE-FINALE.md), [DOCKER-COMPOSE.md](DOCKER-COMPOSE.md), [ELK.md](ELK.md).
+
 ---
 
 # Partie 1 – Mise en œuvre CI/CD
@@ -40,7 +55,15 @@ Le pipeline est défini dans **`.github/workflows/ci-cd.yml`** et s’exécute s
 | Variable | `SONAR_ORGANIZATION` | Organisation SonarCloud (ex. `ghazi135`). |
 | Variable | `ACTIVATE_SONAR` | `true` pour activer le job SonarQube dans le pipeline. |
 
-Les instructions détaillées et le tableau des commandes sont dans [COMMANDES-CICD.md](COMMANDES-CICD.md).
+### Référence des commandes (build, tests, pipeline)
+
+| Contexte | Commandes / jobs | Quand |
+|----------|------------------|--------|
+| **Local back** | `cd back && ./gradlew build` (ou `test`) | À la demande |
+| **Local front** | `cd front && npm ci && npm run build` ; `npm test -- --no-watch --browsers=ChromeHeadlessNoSandbox` | À la demande |
+| **CI** | Jobs Backend – Build & Tests, Frontend – Build & Tests (`.github/workflows/ci-cd.yml`) | Chaque push et PR sur `main`/`master` |
+| **SonarQube** | Job SonarQube Cloud (même workflow) | Si `ACTIVATE_SONAR=true` |
+| **CD** | Job Build & Push Docker images (front, back, standalone → Docker Hub) | Uniquement push sur `main`/`master` |
 
 ---
 

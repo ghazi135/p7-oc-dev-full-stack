@@ -15,13 +15,44 @@ L'application MicroCRM est une implémentation simplifiée d'un ["CRM" (Customer
 
 ## Livrables mission P7 (soutenance)
 
+### Repo GitHub
+
 | Livrable | Emplacement |
 |----------|-------------|
 | **Workflow CI/CD** | [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml) |
 | **Dockerfile(s)** | [Dockerfile](Dockerfile) à la racine (multi-cibles : `front`, `back`, `standalone`) |
-| **README** | Ce fichier : choix techniques et instructions d'exécution ci-dessous |
-| **Documentation CI/CD complète** | [docs/DOCUMENTATION-CICD-LIVRABLE.md](docs/DOCUMENTATION-CICD-LIVRABLE.md) (Partie 1 : mise en œuvre, conteneurisation, testing ; Partie 2 : KPI, métriques, sécurité, sauvegarde, mises à jour) |
-| **Présentation soutenance** | [docs/PRESENTATION-SOUTENANCE-P7.md](docs/PRESENTATION-SOUTENANCE-P7.md) (structure type slides pour 15 min) |
+| **README** | Ce fichier : choix techniques et instructions d'exécution |
+
+### Documentation de CI/CD complète (mission)
+
+La mission demande « *Une documentation de CI/CD complète contenant* » les 8 éléments ci-dessous. **Un seul fichier** les regroupe : **[docs/DOCUMENTATION-CICD-LIVRABLE.md](docs/DOCUMENTATION-CICD-LIVRABLE.md)**
+
+| Partie 1 | Partie 2 |
+|----------|----------|
+| § 1 Les étapes de mise en œuvre CI/CD | § 4 Les KPI proposés et les métriques |
+| § 2 Le plan de conteneurisation et déploiement | § 5 L'analyse des métriques |
+| § 3 Le plan de testing périodique | § 6 Le plan de sécurité |
+| | § 7 Le plan de sauvegarde des données |
+| | § 8 Le plan des mises à jour |
+
+### Autres documents du livrable
+
+| Document | Contenu |
+|----------|---------|
+| [docs/PRESENTATION-SOUTENANCE-P7.md](docs/PRESENTATION-SOUTENANCE-P7.md) | Partie 1 (étapes de mise en œuvre CI/CD, plan de conteneurisation et déploiement, plan de testing périodique). **Document principal = DOCUMENTATION-CICD-LIVRABLE.md (tableau ci-dessus).** Partie 2 (KPI et métriques, analyse des métriques, plan de sécurité, plan de sauvegarde des données, plan des mises à jour). Voir tableau ci-dessus à l’évaluateur. |
+| [docs/VERIFICATION-AUTO-EVALUATION-P7.md](docs/VERIFICATION-AUTO-EVALUATION-P7.md) | Grille de vérification alignée sur la fiche d’auto-évaluation (FAE) . |
+
+### Documents de support (détails par thème)
+
+| Document | Thème |
+|----------|--------|
+| [docs/PLANS-CICD.md](docs/PLANS-CICD.md) | Plan de testing périodique, plan de sécurité (CI), principes de conteneurisation et déploiement. |
+| [docs/PLAN-SECURITE-FINAL.md](docs/PLAN-SECURITE-FINAL.md) | Vulnérabilités, règles critiques, couverture, recommandations sécurité. |
+| [docs/PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](docs/PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md) | Plan de déploiement, plan de sauvegarde des données, plan des mises à jour. |
+| [docs/METRIQUES-DORA-KPI.md](docs/METRIQUES-DORA-KPI.md) | Métriques DORA, KPI opérationnels, méthode de calcul et analyse. |
+| [docs/DOCUMENTATION-TECHNIQUE-FINALE.md](docs/DOCUMENTATION-TECHNIQUE-FINALE.md) | Synthèse métriques, KPI, résultats SonarQube, observations logs/dashboards, recommandations (analyse des métriques). |
+| [docs/DOCKER-COMPOSE.md](docs/DOCKER-COMPOSE.md) | Orchestration des services, commandes docker-compose. |
+| [docs/ELK.md](docs/ELK.md) | Stack ELK (monitoring), centralisation des logs, Kibana. |
 
 ---
 
@@ -181,11 +212,9 @@ L'application sera disponible sur https://localhost et l'API sur http://localhos
 
 ## Documentation (mission P7)
 
-- **[Documentation CI/CD complète (livrable soutenance)](docs/DOCUMENTATION-CICD-LIVRABLE.md)** : Partie 1 (étapes CI/CD, conteneurisation, testing) et Partie 2 (KPI, métriques, sécurité, sauvegarde, mises à jour).
-- **[Étape 1 – Analyse du dépôt et veille](docs/ETAPE1-ANALYSE.md)** : structure du projet, commandes de build/tests, contraintes CI/CD.
-- **[Plans CI/CD (étape 2)](docs/PLANS-CICD.md)** : plan de testing, plan de sécurité, principes de conteneurisation et déploiement.
+- **[Documentation CI/CD complète (livrable soutenance)](docs/DOCUMENTATION-CICD-LIVRABLE.md)** : Partie 1 (étapes CI/CD, conteneurisation, testing) et Partie 2 (KPI, métriques, sécurité, sauvegarde, mises à jour) ; inclut la référence des commandes.
+- **[Plans CI/CD](docs/PLANS-CICD.md)** : plan de testing, plan de sécurité, principes de conteneurisation et déploiement.
 - **[Docker Compose](docs/DOCKER-COMPOSE.md)** : orchestration des services, lancement avec `docker-compose up`.
-- **[Référence des commandes CI/CD](docs/COMMANDES-CICD.md)** : tableau des commandes (objectif, où définies, quand exécutées).
 - **[Stack ELK](docs/ELK.md)** : centralisation des logs (Elasticsearch, Logstash, Kibana), dashboards.
 - **[Métriques DORA et KPI](docs/METRIQUES-DORA-KPI.md)** : indicateurs de performance du pipeline et analyse.
 - **[Plan de sécurité (finalisé)](docs/PLAN-SECURITE-FINAL.md)** : vulnérabilités, SonarQube, recommandations.

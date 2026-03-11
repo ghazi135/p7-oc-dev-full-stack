@@ -12,9 +12,9 @@ Ce document est aligné sur la **Fiche d’auto-évaluation (FAE) P7 FDSJA** (Op
 
 | Indicateur (libellé FAE) | Où c’est dans le projet | Note possible pour la FAE |
 |--------------------------|--------------------------|----------------------------|
-| Mon environnement de tests permet d'exécuter les tests automatisés et d'en récupérer les résultats. | `.github/workflows/ci-cd.yml` : jobs `back-build-test` et `front-build-test` ; rapports JaCoCo (back) et LCOV (front). Local : `./gradlew test`, `npm test`. [COMMANDES-CICD.md](COMMANDES-CICD.md). | Ex. : « CI : back + front ; rapports JaCoCo + LCOV » |
+| Mon environnement de tests permet d'exécuter les tests automatisés et d'en récupérer les résultats. | `.github/workflows/ci-cd.yml` : jobs `back-build-test` et `front-build-test` ; rapports JaCoCo (back) et LCOV (front). Local : `./gradlew test`, `npm test`. [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 1. | Ex. : « CI : back + front ; rapports JaCoCo + LCOV » |
 | J'ai vérifié que mon workflow CI/CD du repo GitHub comprend bien toutes les étapes attendues. | Build back + front, tests, SonarQube Cloud (si activé), build & push Docker (CD). [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 1, [ci-cd.yml](../.github/workflows/ci-cd.yml). | Ex. : « 5 étapes : build, tests, Sonar, CD » |
-| J'ai justifié les actions, outils ou scripts utilisés pour chaque étape du workflow. | [PLANS-CICD.md](PLANS-CICD.md), [COMMANDES-CICD.md](COMMANDES-CICD.md), [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 1 (tableau des étapes). | — |
+| J'ai justifié les actions, outils ou scripts utilisés pour chaque étape du workflow. | [PLANS-CICD.md](PLANS-CICD.md), [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 1, [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 1 (tableau des étapes). | — |
 | Je suis satisfait de la clarté et de l'organisation des étapes de mise en œuvre dans ma documentation. | [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) Partie 1, [README.md](../README.md) (livrables + choix techniques). | — |
 
 ## 2. Automatiser les pipelines CI/CD
@@ -25,7 +25,7 @@ Ce document est aligné sur la **Fiche d’auto-évaluation (FAE) P7 FDSJA** (Op
 |--------------------------|--------------------------|----------------------------|
 | Mes outils et actions utilisés dans le pipeline sont adaptés au projet full-stack Java/Angular. | Gradle (back), npm/Angular CLI (front), SonarQube, Docker (cibles front, back, standalone). [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 2, [Dockerfile](../Dockerfile). | — |
 | Ma configuration CI/CD assure bien l'automatisation complète des tâches demandées. | Compilation, tests, build, analyse qualité, déploiement (build & push images). [ci-cd.yml](../.github/workflows/ci-cd.yml). | — |
-| Mes scripts ou actions intégrés au pipeline ne comportent pas d'étapes inutiles ou manquantes par rapport aux attentes. | Workflow ciblé : build, test, SonarQube, CD ; pas d’étape superflue. [COMMANDES-CICD.md](COMMANDES-CICD.md). | — |
+| Mes scripts ou actions intégrés au pipeline ne comportent pas d'étapes inutiles ou manquantes par rapport aux attentes. | Workflow ciblé : build, test, SonarQube, CD ; pas d’étape superflue. [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 1. | — |
 | Je suis satisfait de la clarté de mon plan de conteneurisation : il permet de comprendre, exécuter et maintenir le pipeline CI/CD. | [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 2, [DOCKER-COMPOSE.md](DOCKER-COMPOSE.md), [PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md). | — |
 | J'ai décrit fidèlement ma méthodologie et mes choix techniques dans ce plan. | [PLANS-CICD.md](PLANS-CICD.md), [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 2 (Dockerfile, Docker Compose, stratégie). | — |
 
@@ -37,7 +37,7 @@ Ce document est aligné sur la **Fiche d’auto-évaluation (FAE) P7 FDSJA** (Op
 |--------------------------|--------------------------|----------------------------|
 | J'ai vérifié que : l'exécution des tests est automatique, les dépendances sont installées, les tests sont positionnés au bon moment dans le workflow. | Jobs `back-build-test` et `front-build-test` ; `npm ci` / Gradle ; tests avant SonarQube et CD. [ci-cd.yml](../.github/workflows/ci-cd.yml), [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 3. | — |
 | J'ai vérifié que les tests sont déclenchés selon les règles prévues en cohérence avec le plan de testing périodique. | Push et PR sur `main`/`master`. [PLANS-CICD.md](PLANS-CICD.md), [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 3. | — |
-| J'ai vérifié que les tests automatisés permettent de vérifier si l'application a bien le comportement attendu. | JUnit (Spring, repositories), Karma/Jasmine (composants, services). [ETAPE1-ANALYSE.md](ETAPE1-ANALYSE.md). | — |
+| J'ai vérifié que les tests automatisés permettent de vérifier si l'application a bien le comportement attendu. | JUnit (Spring, repositories), Karma/Jasmine (composants, services). [PLANS-CICD.md](PLANS-CICD.md). | — |
 | J'ai vérifié que le plan de testing périodique précise bien quand les tests sont exécutés. | Tableau « Moments d’exécution » : push, PR, merge. [PLANS-CICD.md](PLANS-CICD.md), [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 3. | — |
 | J'ai vérifié que mon plan de testing périodique est bien complet. | Types de tests, moments, objectifs, rapports de couverture. [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 3. | — |
 | Je suis satisfait de mon plan de sécurité et de la description de l'intégration des tests : ils sont cohérents avec le code et le workflow réel. | [PLAN-SECURITE-FINAL.md](PLAN-SECURITE-FINAL.md), [DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) § 6. | — |
