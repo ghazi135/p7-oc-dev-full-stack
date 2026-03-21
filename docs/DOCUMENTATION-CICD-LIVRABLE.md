@@ -9,9 +9,9 @@
 | Champ | Contenu |
 |--------|---------|
 | **Titre du document** | Documentation technique – MicroCRM (CI/CD) |
-| **Auteur** | *[À compléter]* |
+| **Auteur** | *GHAZI BOUZAZI* |
 | **Option choisie** | **Option B** – Scénario fictif Orion |
-| **Date** | *[À compléter]* |
+| **Date** | *21/03/2026* |
 
 **Compléments de soutenance :** [PRESENTATION-SOUTENANCE-P7.md](PRESENTATION-SOUTENANCE-P7.md), [VERIFICATION-AUTO-EVALUATION-P7.md](VERIFICATION-AUTO-EVALUATION-P7.md).
 
