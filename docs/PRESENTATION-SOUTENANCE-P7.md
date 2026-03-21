@@ -107,7 +107,7 @@
 - **Sources :** résultats SonarQube (bugs, vulnérabilités, code smells, couverture), métriques DORA, KPI, logs/dashboards ELK
 - **Points critiques identifiés :** ex. fiabilité (issues), couverture à augmenter, security hotspots à revoir
 - **Processus :** analyse → priorisation → actions possibles (corriger les issues, renforcer les tests, serrer le Quality Gate)
-- **Documentation finale :** métriques DORA, KPI, résultats SonarQube, observations logs/dashboards, recommandations (DOCUMENTATION-CICD-LIVRABLE.md § 5 et § 9)
+- **Documentation finale :** métriques DORA, KPI, résultats SonarQube, observations logs/dashboards, recommandations ([DOCUMENTATION-CICD-LIVRABLE.md](DOCUMENTATION-CICD-LIVRABLE.md) §§ 5 à 9)
 
 *À dire :* « Je m’appuie sur SonarQube, les métriques DORA et les KPI pour identifier la dette technique et les risques. Les préconisations sont adaptées au contexte et la documentation finale intègre tous ces éléments. »
 

@@ -25,21 +25,24 @@ L'application MicroCRM est une implémentation simplifiée d'un ["CRM" (Customer
 
 ### Documentation de CI/CD complète (mission)
 
-La mission demande « *Une documentation de CI/CD complète contenant* » les 8 éléments ci-dessous. **Un seul fichier** les regroupe : **[docs/DOCUMENTATION-CICD-LIVRABLE.md](docs/DOCUMENTATION-CICD-LIVRABLE.md)**
+La mission demande « *Une documentation de CI/CD complète contenant* » les 8 éléments ci-dessous. **Un seul fichier** les regroupe : **[docs/DOCUMENTATION-CICD-LIVRABLE.md](docs/DOCUMENTATION-CICD-LIVRABLE.md)** — structuré selon le **template de documentation technique P7 Full-Stack** (Introduction **§ 1**, puis ordre : pipeline **§ 2**, Docker **§ 3**, tests **§ 4**, sécurité **§ 5**, monitoring/KPI **§ 6**, sauvegarde **§ 7**, mises à jour **§ 8**, conclusion **§ 9**).
 
-| Partie 1 | Partie 2 |
-|----------|----------|
-| § 1 Les étapes de mise en œuvre CI/CD | § 4 Les KPI proposés et les métriques |
-| § 2 Le plan de conteneurisation et déploiement | § 5 L'analyse des métriques |
-| § 3 Le plan de testing périodique | § 6 Le plan de sécurité |
-| | § 7 Le plan de sauvegarde des données |
-| | § 8 Le plan des mises à jour |
+| Exigence (énoncé mission) | Section dans la documentation |
+|---------------------------|-------------------------------|
+| Partie 1 – Étapes de mise en œuvre CI/CD | **§ 2** |
+| Partie 1 – Plan de conteneurisation et déploiement | **§ 3** |
+| Partie 1 – Plan de testing périodique | **§ 4** |
+| Partie 2 – KPI proposés et métriques | **§ 6.1** (DORA), **§ 6.2** (KPI) |
+| Partie 2 – Analyse des métriques | **§ 6.3** |
+| Partie 2 – Plan de sécurité | **§ 5** |
+| Partie 2 – Plan de sauvegarde des données | **§ 7** |
+| Partie 2 – Plan des mises à jour | **§ 8** |
 
 ### Autres documents du livrable
 
 | Document | Contenu |
 |----------|---------|
-| [docs/PRESENTATION-SOUTENANCE-P7.md](docs/PRESENTATION-SOUTENANCE-P7.md) | Partie 1 (étapes de mise en œuvre CI/CD, plan de conteneurisation et déploiement, plan de testing périodique). **Document principal = DOCUMENTATION-CICD-LIVRABLE.md (tableau ci-dessus).** Partie 2 (KPI et métriques, analyse des métriques, plan de sécurité, plan de sauvegarde des données, plan des mises à jour). Voir tableau ci-dessus à l’évaluateur. |
+| [docs/PRESENTATION-SOUTENANCE-P7.md](docs/PRESENTATION-SOUTENANCE-P7.md) | Soutenance : renvoie au **DOCUMENTATION-CICD-LIVRABLE.md** (§§ 1–9 + annexes) pour le détail aligné template OC et mission. |
 | [docs/VERIFICATION-AUTO-EVALUATION-P7.md](docs/VERIFICATION-AUTO-EVALUATION-P7.md) | Grille de vérification alignée sur la fiche d’auto-évaluation (FAE) . |
 
 ### Documents de support (détails par thème)

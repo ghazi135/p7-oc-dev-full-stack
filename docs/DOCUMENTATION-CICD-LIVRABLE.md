@@ -1,281 +1,312 @@
-# Documentation CI/CD complète – MicroCRM (P7)
+# Documentation technique – MicroCRM (P7)
 
-**Mission :** Mettre en œuvre l'intégration et le déploiement continu d'une application Full-Stack.
-
-**Contexte :** Projet réalisé dans le cadre de **l’option B (scénario fictif Orion)** : chaîne CI/CD conçue et documentée pour l’application MicroCRM, avec justification des choix techniques et respect des livrables attendus.
-
-Ce document constitue le **livrable documentation** pour la soutenance. Il regroupe la Partie 1 (mise en œuvre CI/CD, conteneurisation, testing) et la Partie 2 (KPI, métriques, sécurité, sauvegarde, mises à jour).
-
-### Correspondance avec la mission : « Une documentation de CI/CD complète contenant »
-
-| Partie | Élément demandé | Où dans ce document |
-|--------|-----------------|----------------------|
-| **Partie 1** | Les étapes de mise en œuvre CI/CD | **§ 1** – Les étapes de mise en œuvre CI/CD |
-| **Partie 1** | Le plan de conteneurisation et déploiement | **§ 2** – Le plan de conteneurisation et déploiement |
-| **Partie 1** | Le plan de testing périodique | **§ 3** – Le plan de testing périodique |
-| **Partie 2** | Les KPI proposés et les métriques | **§ 4** – Les KPI proposés et les métriques |
-| **Partie 2** | L'analyse des métriques | **§ 5** – L'analyse des métriques |
-| **Partie 2** | Le plan de sécurité | **§ 6** – Le plan de sécurité |
-| **Partie 2** | Le plan de sauvegarde des données | **§ 7** – Le plan de sauvegarde des données |
-| **Partie 2** | Le plan des mises à jour | **§ 8** – Le plan des mises à jour |
-
-**Un seul document** : ce fichier constitue la **documentation de CI/CD complète** (Partie 1 + Partie 2). Compléments : [PRESENTATION-SOUTENANCE-P7.md](PRESENTATION-SOUTENANCE-P7.md), [VERIFICATION-AUTO-EVALUATION-P7.md](VERIFICATION-AUTO-EVALUATION-P7.md).
+**Structure :** ce document suit le **template de documentation technique P7 Full-Stack** fourni par OpenClassrooms (fichier *Template documentation P7 FS*, titres et ordre des parties : Introduction → pipeline → conteneurisation → tests → sécurité → monitoring/KPI → sauvegarde → mises à jour → conclusion). Il couvre la mission « Mettre en œuvre l’intégration et le déploiement continu d’une application Full-Stack » (documentation CI/CD complète).
 
 ---
 
-# Partie 1 – Mise en œuvre CI/CD
+## Page de titre
 
-## 1. Les étapes de mise en œuvre CI/CD
+| Champ | Contenu |
+|--------|---------|
+| **Titre du document** | Documentation technique – MicroCRM (CI/CD) |
+| **Auteur** | *[À compléter]* |
+| **Option choisie** | **Option B** – Scénario fictif Orion |
+| **Date** | *[À compléter]* |
 
-Le pipeline est défini dans **`.github/workflows/ci-cd.yml`** et s’exécute sur chaque **push** et **pull request** vers les branches `main` et `master`.
+**Compléments de soutenance :** [PRESENTATION-SOUTENANCE-P7.md](PRESENTATION-SOUTENANCE-P7.md), [VERIFICATION-AUTO-EVALUATION-P7.md](VERIFICATION-AUTO-EVALUATION-P7.md).
 
-### Étapes réalisées
+### Correspondance mission / sections
 
-| Étape | Description | Outils |
-|-------|-------------|--------|
-| **1. Checkout** | Récupération du code source depuis le dépôt GitHub. | `actions/checkout@v4` |
-| **2. Backend – Build & Tests** | Build Gradle (Java 17), exécution des tests JUnit, génération du JAR et du rapport JaCoCo. | JDK 17 (Temurin), Gradle, JUnit 5 |
-| **3. Frontend – Build & Tests** | `npm ci`, build Angular (production), tests unitaires Karma/Jasmine, génération du rapport LCOV. | Node.js 20, npm, Karma, Chrome Headless |
-| **4. SonarQube Cloud** | Analyse statique du code (back + front), qualité, sécurité, couverture (si `ACTIVATE_SONAR=true`). | SonarScanner, SonarCloud |
-| **5. CD – Build & Push Docker** | Sur `main`/`master` uniquement : build des images Docker (front, back, standalone) et publication vers Docker Hub. | Docker Buildx, Docker Hub |
+| Exigence (brief) | Section dans ce document |
+|------------------|---------------------------|
+| Étapes de mise en œuvre CI/CD | **§ 2** |
+| Plan de conteneurisation et déploiement | **§ 3** |
+| Plan de testing périodique | **§ 4** |
+| Plan de sécurité | **§ 5** |
+| KPI, métriques DORA, analyse | **§ 6** |
+| Plan de sauvegarde | **§ 7** |
+| Plan des mises à jour | **§ 8** |
 
-### Déclencheurs
+---
 
-- **CI** : à chaque push et à chaque pull request vers `main` ou `master`.
-- **CD** : uniquement sur push vers `main` ou `master` (pas sur les PR).
+## 1. Introduction
 
-### Secrets et variables à configurer (GitHub)
+### 1.1 Contexte du projet
+
+Application **MicroCRM** full-stack : backend **Spring Boot / Java 17 / Gradle**, frontend **Angular**. Le dépôt est sur **GitHub** ; l’industrialisation repose sur **GitHub Actions**, **Docker**, **SonarQube Cloud** (optionnel) et, pour le scénario Orion, une stack **ELK** documentée dans le README pour l’observabilité.
+
+### 1.2 Objectifs de l’industrialisation
+
+- Automatiser **build**, **tests** et **analyse qualité** à chaque changement sur les branches protégées.
+- Produire des **images Docker** reproductibles et les publier sur un registre (**Docker Hub**).
+- Documenter **sécurité**, **sauvegarde**, **mises à jour** et **indicateurs** pour la mise en production et l’amélioration continue.
+
+### 1.3 Technologies principales
+
+| Domaine | Outils |
+|---------|--------|
+| CI/CD | GitHub Actions (`actions/checkout`, `setup-java`, `setup-node`, `docker/build-push-action`, SonarSource scan, `softprops/action-gh-release`) |
+| Conteneurs | Dockerfile multi-cibles, Docker Compose |
+| Qualité | SonarQube Cloud, JaCoCo (back), LCOV (front) |
+| Tests | JUnit 5 / Spring Test (back), Karma / Jasmine (front) |
+
+### 1.4 Présentation rapide du pipeline CI/CD
+
+Le workflow **`.github/workflows/ci-cd.yml`** enchaîne : jobs **backend** et **frontend** (build + tests en parallèle) → **SonarQube Cloud** (si `ACTIVATE_SONAR=true`) → sur **push** vers `main` ou `master` uniquement : **build & push** des images Docker puis **release GitHub** (tag dérivé de `back/build.gradle`, JAR + archive front). Les **pull requests** vers `main`/`master` exécutent la CI (et Sonar si activé) mais **pas** le CD ni la release.
+
+---
+
+## 2. Étapes de mise en œuvre du pipeline CI/CD
+
+### 2.1 Structure du pipeline
+
+| Ordre | Job (nom dans Actions) | Rôle | Outils / actions notables |
+|-------|------------------------|------|-----------------------------|
+| 1 (parallèle) | Backend – Build & Tests | Checkout, Gradle build + tests, artefact JAR | `actions/checkout@v4`, `setup-java@v4` (cache Gradle), `./gradlew build` |
+| 1 (parallèle) | Frontend – Build & Tests | Checkout, `npm ci`, build prod, tests Karma | `setup-node@v4` (cache npm), Chrome headless, `npm test -- --no-watch --browsers=ChromeHeadlessNoSandbox` |
+| 2 | SonarQube Cloud | Rebuild avec rapports de couverture, scan | `SonarSource/sonarqube-scan-action@v6` ; modules `back` + `front` |
+| 3 | Build & Push Docker images | Images `front`, `back`, `standalone` | `docker/setup-buildx-action@v3`, `docker/login-action@v3`, `docker/build-push-action@v6` |
+| 4 | Create Release | Tag `v*` + assets `microcrm.jar`, `front-dist.zip` | `softprops/action-gh-release@v2` |
+
+**Déclencheurs réels :** `push` et `pull_request` **uniquement** pour les branches **`main`** et **`master`**. Une push sur une autre branche **ne** lance **pas** le workflow.
+
+**Justification des actions GitHub :** actions officielles ou maintenues (Docker, Sonar) pour limiter la dette de maintenance ; cache Gradle/npm pour le **Lead Time** ; Buildx + cache GHA pour accélérer les builds d’images ; release automatisée pour tracer les livrables binaires alignés sur la version Gradle.
+
+### 2.2 Scripts d’automatisation
+
+| Élément | Rôle | Exécution / adaptation |
+|---------|------|-------------------------|
+| **`.github/workflows/ci-cd.yml`** | Orchestration complète CI/CD | Se déclenche sur GitHub ; modifier les jobs ou `env` pour adapter versions Java/Node, noms d’images, conditions `if`. |
+| **`back/gradlew` + `build.gradle`** | Build et tests backend | Local : `cd back && ./gradlew build` ; couverture Sonar : `jacocoTestReport`. |
+| **`front/package.json`** | Scripts `build`, `test` | Local : `cd front && npm ci && npm run build` ; tests CI : `npm test -- --no-watch --browsers=ChromeHeadlessNoSandbox`. |
+| **Dockerfile (racine)** | Construction des images | `docker build --target front|back|standalone .` ; tags poussés par le workflow. |
+
+Le workflow utilise des **steps** `run:` (shell) plutôt que des scripts `.sh` versionnés séparément : tout est lisible dans le YAML pour la reprise en main.
+
+### 2.3 Reproductibilité
+
+- **Relancer le pipeline :** pousser un commit ou ouvrir/mettre à jour une PR vers `main` ou `master` ; onglet **Actions** du dépôt pour consulter les runs.
+- **Secrets (ne jamais commiter ni afficher) :** `DOCKERHUB_TOKEN`, `SONAR_TOKEN` ; le workflow utilise `secrets.*` et `vars.*` (ex. `DOCKERHUB_USERNAME`, `SONAR_PROJECT_KEY`, `SONAR_ORGANIZATION`, `ACTIVATE_SONAR`, `SONAR_HOST_URL` optionnelle).
+- **SonarQube :** le job `sonarcloud` est en `continue-on-error: true` pour ne pas bloquer la CI en cas d’indisponibilité ou de configuration incomplète — à retirer si vous imposez un gate strict.
+
+### 2.4 Secrets et variables (référence)
 
 | Type | Nom | Usage |
 |------|-----|--------|
-| Secret | `DOCKERHUB_TOKEN` | Authentification pour le push des images vers Docker Hub. |
-| Secret | `SONAR_TOKEN` | Jeton SonarCloud pour l’analyse qualité/sécurité. |
-| Variable | `DOCKERHUB_USERNAME` | Nom d’utilisateur Docker Hub (optionnel si dérivé du repo). |
-| Variable | `SONAR_PROJECT_KEY` | Clé du projet SonarCloud (ex. `ghazi135_p7-oc-dev-full-stack`). |
-| Variable | `SONAR_ORGANIZATION` | Organisation SonarCloud (ex. `ghazi135`). |
-| Variable | `ACTIVATE_SONAR` | `true` pour activer le job SonarQube dans le pipeline. |
-
-### Référence des commandes (build, tests, pipeline)
-
-| Contexte | Commandes / jobs | Quand |
-|----------|------------------|--------|
-| **Local back** | `cd back && ./gradlew build` (ou `test`) | À la demande |
-| **Local front** | `cd front && npm ci && npm run build` ; `npm test -- --no-watch --browsers=ChromeHeadlessNoSandbox` | À la demande |
-| **CI** | Jobs Backend – Build & Tests, Frontend – Build & Tests (`.github/workflows/ci-cd.yml`) | Chaque push et PR sur `main`/`master` |
-| **SonarQube** | Job SonarQube Cloud (même workflow) | Si `ACTIVATE_SONAR=true` |
-| **CD** | Job Build & Push Docker images (front, back, standalone → Docker Hub) | Uniquement push sur `main`/`master` |
+| Secret | `DOCKERHUB_TOKEN` | Push des images |
+| Secret | `SONAR_TOKEN` | Analyse SonarCloud |
+| Variable | `DOCKERHUB_USERNAME` | Compte Docker Hub (sinon `repository_owner`) |
+| Variable | `SONAR_PROJECT_KEY`, `SONAR_ORGANIZATION` | Projet SonarCloud |
+| Variable | `ACTIVATE_SONAR` | `true` pour activer le job Sonar |
+| Variable | `SONAR_HOST_URL` | Optionnel (défaut `https://sonarcloud.io`) |
 
 ---
 
-## 2. Le plan de conteneurisation et déploiement
+## 3. Plan de conteneurisation et de déploiement
 
-### 2.1 Dockerfile et cibles
+### 3.1 Dockerfiles
 
-Le **Dockerfile** unique à la racine du projet est un **build multi-étapes** avec plusieurs cibles :
+Le **Dockerfile** à la racine est un **build multi-étapes** avec cibles **`front`**, **`back`**, **`standalone`** :
 
-| Cible | Description | Ports | Usage |
-|-------|-------------|-------|--------|
-| **front** | Build Angular → image Alpine + Caddy pour servir les fichiers statiques (HTTP/HTTPS). | 80, 443 | Service front seul. |
-| **back** | Build Gradle → JAR → image Alpine + JRE 17. | 8080 | Service API seul. |
-| **standalone** | Combine front + back dans une seule image (Supervisord). | 80, 443, 8080 | Démo ou déploiement simplifié. |
+| Cible | Idée | Ports |
+|-------|------|-------|
+| **front** | Build Angular → image légère (Alpine + Caddy) | 80, 443 |
+| **back** | JAR Spring Boot + JRE 17 | 8080 |
+| **standalone** | Front + back supervisés dans une seule image | 80, 443, 8080 |
 
-**Choix techniques :**
+**Choix :** images **Alpine** / bases officielles pour réduire taille et surface d’attaque ; **multi-stage** pour ne pas embarquer les toolchains de build en production ; configuration par **variables d’environnement** au déploiement, pas de secrets dans l’image.
 
-- **Images de base** : Alpine pour réduire la taille et la surface d’attaque.
-- **Build séparé** : les étapes `front-build` et `back-build` produisent les artefacts ; les étapes finales ne contiennent que le strict nécessaire pour l’exécution.
-- **Pas de données sensibles** dans les images (config via variables d’environnement en déploiement).
+### 3.2 docker-compose.yml
 
-### 2.2 Orchestration avec Docker Compose
+- Services **`back`** et **`front`** : lancement local avec `docker-compose up --build` (ports documentés dans le README).
+- Profil **`full`** / service **standalone** : `docker-compose --profile full up standalone --build` selon la configuration du dépôt.
 
-Le fichier **`docker-compose.yml`** à la racine permet de lancer l’application (services `back` et `front`) avec une seule commande :
-
-```bash
-docker-compose up --build
-```
-
-- **back** : API sur http://localhost:8080  
-- **front** : Interface sur http://localhost (80) ou https://localhost (443)
-
-Pour l’image tout-en-un :
-
-```bash
-docker-compose --profile full up standalone --build
-```
-
-### 2.3 Stratégie de déploiement
-
-- **CI** : à chaque push/PR → build + tests + SonarQube (si activé). Aucune publication d’image.
-- **CD** : sur branche `main`/`master` → build des images (front, back, standalone) et **publication vers Docker Hub**.
-- **Tags d’images** : `latest` pour la dernière version sur `main` ; possibilité d’ajouter le SHA du commit ou un numéro de version pour la traçabilité.
-
-Ordre : récupération des images ou build local → `docker-compose up -d` (back puis front) ; vérification des URLs (API, front) ; variables d’environnement en production via le déploiement (pas de secrets dans les images).
+**Déploiement :** en CI/CD, publication sur **Docker Hub** avec tags `latest` et SHA ; en cible, `docker-compose pull && docker-compose up -d` (ou orchestrateur équivalent).
 
 ---
 
-## 3. Le plan de testing périodique
+## 4. Plan de testing périodique
 
-### 3.1 Types de tests
+### 4.1 Types de tests automatisés
 
-| Zone | Type | Outil | Objectif |
-|------|------|--------|-----------|
-| **Backend** | Tests unitaires / intégration | JUnit 5, Spring Boot Test, DataJpaTest | Vérifier le contexte Spring, les repositories et la non-régression. |
-| **Frontend** | Tests unitaires (composants, services) | Karma + Jasmine | Vérifier le comportement des composants et services. |
+| Zone | Type | Outil | Couverture / qualité |
+|------|------|--------|----------------------|
+| Back | Unitaires / intégration Spring | JUnit 5, Spring Boot Test, DataJpaTest | JaCoCo → `back/build/reports/jacoco/test/jacocoTestReport.xml` |
+| Front | Unitaires composants / services | Karma, Jasmine | LCOV → `front/coverage/microcrm/lcov.info` |
+| Transverse | Analyse statique (sécurité, smells) | SonarQube Cloud | À la fin des jobs back/front (job dédié) |
 
-Les rapports de couverture sont utilisés par SonarQube :
+**Critères de réussite :** échec d’un test ou du build **bloque** les jobs concernés ; le merge sur `main`/`master` ne doit pas introduire de régression détectée par la CI.
 
-- **Backend** : JaCoCo → `back/build/reports/jacoco/test/jacocoTestReport.xml`
-- **Frontend** : LCOV → `front/coverage/microcrm/lcov.info`
+### 4.2 Fréquence d’exécution
 
-### 3.2 Moments d’exécution
+| Événement | Tests exécutés |
+|-----------|----------------|
+| **Push** vers `main` ou `master` | Back + front (build + tests) ; puis Sonar si activé ; puis CD |
+| **Pull request** vers `main` ou `master` | Back + front + Sonar si activé ; **sans** CD/release |
+| **Autres branches** | Aucun run du workflow (tant que les déclencheurs ne sont pas étendus) |
+| **Nightly / avant release** | *Optionnel :* ajouter un workflow `schedule` ou une règle manuelle ; non implémenté par défaut — les releases sur `main` passent déjà par la CI |
 
-| Événement | Tests exécutés | Objectif |
-|-----------|----------------|----------|
-| **Push** sur toute branche | Build back + front, tests back, tests front | Détecter rapidement les régressions et les erreurs de build. |
-| **Pull Request** vers `main` | Idem + analyse SonarQube (si activée) | S’assurer que la PR ne dégrade pas la qualité ni la sécurité. |
-| **Merge sur main** | Idem + CD (build et push des images) | Produire des artefacts déployables. |
+### 4.3 Objectifs des tests
 
-### 3.3 Objectifs
-
-- **Validation fonctionnelle** : les tests back et front confirment le comportement attendu.
-- **Non-régression** : à chaque modification, l’ensemble des tests doit rester vert ; un échec bloque la suite du pipeline.
-- **Qualité** : le build et les tests sont un préalable à l’analyse SonarQube.
-
+- **Qualité** et **non-régression** avant merge et avant publication d’images.
+- **Confiance au déploiement** : les mêmes commandes s’exécutent localement et sur le runner Ubuntu.
 
 ---
 
-# Partie 2 – KPI, métriques, sécurité, sauvegarde, mises à jour
+## 5. Plan de sécurité
 
-## 4. Les KPI proposés et les métriques
+### 5.1 Résultats SonarQube (à actualiser depuis SonarCloud)
 
-### 4.1 Métriques DORA
+| Catégorie | Ce qu’il faut y mettre | Où les lire |
+|-----------|-------------------------|-------------|
+| Vulnérabilités | Liste ou synthèse des findings | SonarCloud → Security |
+| Code smells critiques | Issues élevées / hotspots | Issues, filtres sévérité |
+| Zones de complexité | Fichiers ou modules | Métriques complexité cognitive |
+| Couverture | % lignes / branches | Lié aux rapports JaCoCo + LCOV |
 
-| Métrique | Définition | Objectif |
-|----------|-------------|----------|
-| **Lead Time for Changes** | Délai entre un commit et la mise en production effective. | Réduire ce délai (ex. durée du pipeline). |
-| **Deployment Frequency** | Nombre de déploiements en production sur une période. | Augmenter la fréquence grâce à un pipeline fiable. |
-| **MTTR (Mean Time to Restore)** | Temps moyen pour rétablir le service après un incident. | Réduire le MTTR. |
-| **Change Failure Rate** | Pourcentage de déploiements ayant provoqué un problème (bug, rollback). | Réduire ce taux par la qualité et les tests. |
+*Pour la soutenance : insérer ici des valeurs chiffrées ou des captures d’écran (voir **Annexes**).*
 
-### 4.2 KPI opérationnels du projet
+### 5.2 Analyse des risques
 
-| KPI | Description | Méthode de calcul | Objectif |
-|-----|-------------|--------------------|----------|
-| **Temps de build back** | Durée du job « Backend – Build & Tests ». | Moyenne sur les derniers runs (GitHub Actions). | Réduire (cache Gradle). |
-| **Temps de build front** | Durée du job « Frontend – Build & Tests ». | Moyenne sur les runs. | Réduire (cache npm). |
-| **Taux de succès des tests** | % de runs CI où tous les tests passent. | (Runs avec tests verts) / (Runs totaux) × 100. | Viser 100 %. |
-| **Qualité SonarQube** | Statut du Quality Gate et nombre d’issues. | Résultats SonarCloud sur les PR/push. | Maintenir le gate vert. |
-| **Fréquence des erreurs (logs)** | Nombre d’événements ERROR dans les logs. | Comptage dans ELK/Kibana (index `microcrm-logs-*`). | Détecter les pics et corriger. |
+| Risque | Origine possible | Mitigation dans le projet |
+|--------|------------------|---------------------------|
+| Fuite de secrets | Mauvaise config repo | Secrets GitHub uniquement ; pas de tokens dans le code |
+| Dépendances vulnérables | npm / Gradle | SonarQube + pistes : `npm audit`, OWASP Dependency-Check |
+| Image Docker obsolète | Bases non patchées | Mise à jour des tags de base documentée (§ 8) |
+| Pipeline contourné | Merge sans CI | Protection de branche `main` côté GitHub (recommandé) |
+| Qualité non bloquante | `continue-on-error` sur Sonar | À durcir si le Quality Gate doit être obligatoire |
 
+### 5.3 Plan d’action / remédiation
 
----
+| Horizon | Actions |
+|---------|---------|
+| **Immédiat** | Corriger vulnérabilités **blocker/critical** Sonar ; vérifier qu’aucun secret n’a été commité. |
+| **Court terme** | Augmenter la couverture sur le code métier critique ; réduire duplications signalées. |
+| **Long terme** | Audits dépendances en CI ; durcissement du gate Sonar ; revue périodique des images de base. |
 
-## 5. L’analyse des métriques
-
-- **Pipeline** : le CI (build + tests) et le CD (build & push des images) fournissent les données pour le Lead Time et la Deployment Frequency. Relever les durées des jobs sur plusieurs exécutions permet d’identifier les lenteurs (cache Gradle/npm, parallélisation).
-- **Qualité** : les métriques SonarQube (bugs, vulnérabilités, code smells) et le taux de succès des tests sont des indicateurs de la **Change Failure Rate** potentielle : moins d’anomalies et des tests systématiques limitent les déploiements défaillants.
-- **Monitoring** : les indicateurs ELK (volume de logs, erreurs, tendances) permettent de relier les incidents au comportement de l’application et d’alimenter une estimation du **MTTR**.
-
-Cette analyse est à mettre à jour après chaque période d’observation (sprint, lot de déploiements).
-
----
-
-## 6. Le plan de sécurité
-
-### 6.1 Rôle de SonarQube Cloud
-
-- **Analyse statique** du code back (Java) et front (TypeScript/JavaScript) à chaque run CI (push/PR).
-- **Types de problèmes surveillés** : bugs, vulnérabilités (OWASP Top 10, etc.), code smells, couverture de tests.
-
-Références : [SonarSource Rules](https://rules.sonarsource.com/), [OWASP Top 10](https://owasp.org/Top10/).
-
-### 6.2 Éléments à suivre (résultats SonarQube)
-
-| Catégorie | Description | Où les trouver |
-|-----------|-------------|----------------|
-| **Vulnérabilités** | Failles de sécurité (injection, exposition de données). | SonarCloud, onglet Security / Vulnerabilities. |
-| **Duplications** | Code dupliqué. | Métrique « Duplications ». |
-| **Zones à forte complexité** | Complexité cyclomatique/cognitive élevée. | SonarCloud, Complexity / Cognitive Complexity. |
-| **Règles critiques violées** | Violations Blocker ou Critical. | SonarCloud, Issues, filtre par sévérité. |
-| **Couverture de tests** | % de lignes/branches couvertes. | Rapports JaCoCo (back) et LCOV (front). |
-
-### 6.3 Bonnes pratiques en place
-
-- **Secrets** : aucun mot de passe, token ou clé en clair ; utilisation des secrets et variables GitHub.
-- **Images Docker** : bases officielles (Alpine, Temurin), images légères, pas de données sensibles dans les images.
-- **Pipeline** : tests automatiques et analyse SonarQube (si activée) avant merge.
-
-### 6.4 Pistes d’amélioration
-
-1. Corriger toutes les **vulnérabilités** et **issues critiques** remontées par SonarQube.  
-2. Augmenter la **couverture de tests** sur les parties critiques.  
-3. Réduire les **duplications** et la **complexité** (refactoring ciblé).  
-4. Exécuter **npm audit** (front) et un audit des dépendances back (ex. OWASP Dependency Check) en CI.
-
+Références utiles : [Règles SonarSource](https://rules.sonarsource.com/), [OWASP Top 10](https://owasp.org/Top10/).
 
 ---
 
-## 7. Le plan de sauvegarde des données
+## 6. Monitoring, métriques et KPI
 
-### 7.1 Éléments à sauvegarder
+### 6.1 Métriques DORA
 
-| Élément | Description | Fréquence |
-|---------|-------------|-----------|
-| **Code source et historique** | Dépôt Git (GitHub). | Continue (push/merge). |
-| **Configurations** | Fichiers de configuration (docker-compose, pipeline, Logstash, etc.) versionnés dans le dépôt. | À chaque changement significatif. |
-| **Données applicatives** | Projet actuel : HSQLDB en mémoire (backend) — **aucune persistance**. | N/A tant qu’il n’y a pas de base persistante. |
-| **Secrets / variables** | Gérés par la plateforme (GitHub Secrets). Ne pas les stocker dans le dépôt ; documenter la liste des clés et leur emplacement. | Documentation interne à jour. |
+| Métrique | Définition | Méthode de calcul (indicative) | Valeurs observées |
+|----------|------------|--------------------------------|-------------------|
+| **Lead Time for Changes** | Délai commit → prod utilisable | Horodatage merge `main` → fin du job CD + déploiement manuel éventuel | *[À renseigner : ex. médiane sur N runs GitHub Actions + délai ops]* |
+| **Deployment Frequency** | Nombre de mises en prod sur une période | Compter les déploiements réels ou les pushes `main` avec CD réussi | *[À renseigner]* |
+| **MTTR** | Temps moyen de rétablissement après incident | Durée entre alerte / ticket et service rétabli | *[À renseigner ; peut s’appuyer sur logs ELK si déployé]* |
+| **Change Failure Rate** | % de déploiements suivis d’un incident ou rollback | (Déploiements défaillants / déploiements totaux) × 100 | *[À renseigner]* |
 
-### 7.2 Méthode et restauration
+Les durées des jobs **Backend – Build & Tests** et **Frontend – Build & Tests** dans l’onglet Actions servent de base concrète pour estimer le **Lead Time** côté pipeline.
 
-- **Code et config** : sauvegarde assurée par Git (remote GitHub). Cloner le dépôt ou `git pull` pour restaurer.
-- **Reconstruction** : le pipeline CI/CD permet de reconstruire et republier les images à partir du code à tout moment ; en cas de perte d’un environnement, redéployer à partir du dépôt et du registre d’images.
+### 6.2 KPI personnalisés
 
-Pour une future base de données persistante : définir des sauvegardes régulières (dumps) et une procédure de restauration (répertoire, fréquence, rétention).
+| KPI | Calcul / source | Objectif |
+|-----|-----------------|----------|
+| Temps de build back | Durée moyenne du job backend | Réduire (cache Gradle déjà activé) |
+| Temps de build front | Durée moyenne du job frontend | Réduire (cache npm) |
+| **Temps d’exécution des tests** | Part du job consacrée aux steps `test` (back : Gradle test ; front : Karma) | Stabiliser et surveiller les régressions de perf |
+| Taux de succès CI | Runs verts / runs totaux sur `main` | Viser 100 % |
+| Erreurs dans les logs | Comptage niveau ERROR dans ELK / Kibana (`microcrm-logs-*`) | Détecter les pics |
 
+### 6.3 Analyse synthétique du monitoring
 
----
-
-## 8. Le plan des mises à jour
-
-### 8.1 Application
-
-- **Mise à jour du code** : via le dépôt Git (branches, PR, merge sur `main`). Le pipeline CI build et teste ; le CD publie les nouvelles images sur push sur `main`.
-- **Déploiement des mises à jour** : tirer les nouvelles images depuis le registre et redémarrer les conteneurs (`docker-compose pull && docker-compose up -d`) ou déclencher un déploiement automatisé si l’environnement le permet.
-
-### 8.2 Dépendances et packages
-
-- **Backend (Gradle)** : mettre à jour les dépendances dans `back/build.gradle` ; valider par les tests et la CI.
-- **Frontend (npm)** : `npm outdated`, puis mise à jour ciblée dans `front/package.json` et `npm install` ; lancer les tests (Karma) et la CI avant merge.
-- **Images Docker** : mettre à jour les tags des images de base dans le `Dockerfile` (node, gradle, alpine) et dans `docker-compose-elk.yml` (Elasticsearch, Logstash, Kibana) ; rebuild et tests après chaque changement.
-
-### 8.3 Bonnes pratiques
-
-- **Évolution régulière** : ajuster les processus (tests, qualité SonarQube, KPI) en fonction de l’évolution de l’application et des outils.
-- **Non-régression** : toute mise à jour (code, dépendances, images) doit passer par le pipeline (build, tests, analyse qualité) avant déploiement.
-- **Traçabilité** : versions et changements documentés dans le dépôt (commits, tags, release notes si applicable).
+- **Tendances :** comparer sur 2–4 semaines les durées de workflow, le taux d’échec et le volume d’erreurs dans les logs.
+- **Points forts :** parallélisation back/front, caches, images reproductibles.
+- **Points à améliorer :** lenteurs résiduelles (tests front, build Docker), couverture, dette Sonar.
+- **Dashboards :** sous **Option B**, Kibana sur l’index des logs applicatifs — visualisations volumétrie, niveaux de log, recherche par corrélation (voir README et captures sous `docs/screenshots/` si présentes).
+- **Alertes :** à définir dans la stack de monitoring (seuils sur taux d’erreur ou absence de logs) ; documenter ici les règles une fois configurées.
 
 ---
 
-## 9. Conclusion et recommandations
+## 7. Plan de sauvegarde des données
 
-| Priorité | Recommandation | Justification |
-|----------|----------------|---------------|
-| 1 | Maintenir les **tests automatisés** et le **Quality Gate** SonarQube. | Réduction de la Change Failure Rate et détection des régressions. |
-| 2 | Corriger les **vulnérabilités** et **issues critiques** SonarQube. | Conformité au plan de sécurité. |
-| 3 | Augmenter la **couverture de tests** sur les parties métier. | Meilleure confiance lors des mises à jour. |
-| 4 | Suivre les **KPI** et **métriques DORA** sur plusieurs sprints. | Identifier les goulots et tendances. |
-| 5 | Utiliser les **logs ELK** (si déployé) pour relier erreurs et zones de code signalées par SonarQube. | Priorisation des corrections. |
-| 6 | Mettre à jour régulièrement **dépendances** et **images de base** (Gradle, npm, Docker). | Limitation des CVE. |
+### 7.1 Ce qui doit être sauvegardé
 
-**Résumé** : Pipeline reproductible (workflow, Docker, secrets gérés) ; toute évolution doit passer par le pipeline avant déploiement.
+| Élément | Commentaire |
+|---------|-------------|
+| Données applicatives | Projet actuel : **HSQLDB en mémoire** — pas de persistance à sauvegarder tant qu’il n’y a pas de base dédiée. |
+| Fichiers de configuration | Versionnés dans Git (`docker-compose*`, workflow, Logstash, etc.). |
+| Artefacts de build | JAR et `front-dist.zip` via **GitHub Releases** ; images sur **Docker Hub** ; reproductibles depuis le code. |
+| Secrets | Stockés côté GitHub ; maintenir une **liste à jour** (noms des clés) sans valeurs. |
+
+### 7.2 Procédure de sauvegarde
+
+| Aspect | Détail |
+|--------|--------|
+| **Format** | Git (historique) ; images OCI sur registre ; binaires en pièces jointes de release. |
+| **Fréquence** | Continue pour le code (push) ; images à chaque CD réussi sur `main`/`master`. |
+| **Outils** | `git push`, pipeline CI/CD, registre Docker. |
+
+### 7.3 Procédure de restauration
+
+| Scénario | Étapes |
+|----------|--------|
+| Perte d’un clone local | `git clone` / `git pull` depuis GitHub. |
+| Perte d’images locales | `docker pull` depuis Docker Hub ou relancer le pipeline pour rebuild + push. |
+| Environnement à reconstruire | Checkout du tag ou commit connu → `docker-compose up` ou déploiement depuis images taguées. |
+
+**Limitation :** sans base persistante, pas de restauration de données métier ; une future BDD imposerait dumps planifiés et procédure de restore testée.
+
+**Action automatisée facilitant la restauration :** le workflow reconstruit et republie les artefacts à partir du dépôt — pas besoin de sauvegardes manuelles du binaire si le code et le registre sont sains.
 
 ---
 
-## Récapitulatif des livrables
+## 8. Plan de mise à jour
+
+### 8.1 Mise à jour de l’application
+
+- **Dépendances Gradle** (`back/build.gradle`) et **npm** (`front/package.json`) : mise à jour incrémentale, tests locaux + CI.
+- **Frameworks** (Spring Boot, Angular) : suivre les guides de migration officiels.
+- **Images Docker** : faire évoluer les tags de base dans le Dockerfile et `docker-compose-elk.yml` si utilisé ; rebuild et validation.
+
+### 8.2 Mise à jour du pipeline CI/CD
+
+- **Versions des actions** (`@v4`, `@v6`, etc.) : suivre les release notes GitHub Actions et Sonar ; mettre à jour le YAML après test sur une branche.
+- **Runners** : `ubuntu-latest` évolue ; surveiller les breaking changes (ex. paquets Chrome).
+- **SonarScanner** : aligner `sonarqube-scan-action` sur les versions supportées par SonarCloud.
+
+### 8.3 Fréquence et bonnes pratiques
+
+- Passer les mises à jour de sécurité **npm/Gradle** en priorité après revue changelog.
+- Réévaluer **KPI**, **seuils d’alerte** et **processus de review** à chaque changement majeur d’outils.
+
+---
+
+## 9. Conclusion
+
+| Priorité | Recommandation |
+|----------|----------------|
+| 1 | Maintenir tests automatisés et Quality Gate SonarQube. |
+| 2 | Traiter vulnérabilités et issues critiques. |
+| 3 | Augmenter la couverture sur le métier. |
+| 4 | Renseigner les **valeurs observées** DORA/KPI à partir d’Actions et du monitoring. |
+| 5 | Mettre à jour dépendances et images de base de façon planifiée. |
+
+**Synthèse :** le pipeline est reproductible, aligné sur le stack Java/Angular, et documenté pour la sécurité, la sauvegarde logique (code + images + releases) et l’évolution continue.
+
+---
+
+## Récapitulatif des livrables (dépôt)
 
 | Livrable | Emplacement |
-|----------|--------------|
-| **Workflow CI/CD** | [.github/workflows/ci-cd.yml](../.github/workflows/ci-cd.yml) |
-| **Dockerfiles** | [Dockerfile](../Dockerfile) (multi-cibles : front, back, standalone) |
-| **README (choix techniques et instructions)** | [README.md](../README.md) |
-| **Documentation CI/CD complète** | Ce document + références ci-dessus |
+|----------|-------------|
+| Workflow CI/CD | [.github/workflows/ci-cd.yml](../.github/workflows/ci-cd.yml) |
+| Dockerfile multi-cibles | [Dockerfile](../Dockerfile) |
+| README | [README.md](../README.md) |
+| Documentation complète | Ce document |
+
+---
+
+## Annexes (optionnelles)
+
+- Captures **SonarQube** (Quality Gate, issues).
+- Captures **Kibana** / exemples de requêtes sur les logs.
+- Extraits du **workflow** ou liens vers runs Actions représentatifs.
+- **Commandes utiles** : voir § 2.2 et README.
+
+---
+
+*Document structuré selon le template OpenClassrooms « Template documentation P7 FS » (sections 1 à 9 + annexes).*
