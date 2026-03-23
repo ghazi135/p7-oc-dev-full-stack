@@ -38,13 +38,6 @@ La mission demande « *Une documentation de CI/CD complète contenant* » les 8 
 | Partie 2 – Plan de sauvegarde des données | **§ 7** |
 | Partie 2 – Plan des mises à jour | **§ 8** |
 
-### Autres documents du livrable
-
-| Document | Contenu |
-|----------|---------|
-| [docs/PRESENTATION-SOUTENANCE-P7.md](docs/PRESENTATION-SOUTENANCE-P7.md) | Soutenance : renvoie au **DOCUMENTATION-CICD-LIVRABLE.md** (§§ 1–9 + annexes) pour le détail aligné template OC et mission. |
-| [docs/VERIFICATION-AUTO-EVALUATION-P7.md](docs/VERIFICATION-AUTO-EVALUATION-P7.md) | Grille de vérification alignée sur la fiche d’auto-évaluation (FAE) . |
-
 ### Documents de support (détails par thème)
 
 | Document | Thème |
@@ -216,8 +209,6 @@ L'application sera disponible sur https://localhost et l'API sur http://localhos
 ## Documentation (mission P7)
 
 - **[Documentation CI/CD complète](docs/DOCUMENTATION-CICD-LIVRABLE.md)** : livrable principal (Partie 1 + Partie 2 : étapes CI/CD, conteneurisation, testing, KPI, métriques, sécurité, sauvegarde, mises à jour, conclusion).
-- **[Présentation soutenance](docs/PRESENTATION-SOUTENANCE-P7.md)** : structure type slides pour l’oral.
-- **[Vérification auto-évaluation P7](docs/VERIFICATION-AUTO-EVALUATION-P7.md)** : grille FAE (où trouver chaque indicateur).
 - **Captures** : `docs/screenshots/` (SonarQube, Kibana, GitHub Actions).
 
 ---
