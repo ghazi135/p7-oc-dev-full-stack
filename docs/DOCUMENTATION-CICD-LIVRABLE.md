@@ -166,7 +166,8 @@ Le **Dockerfile** à la racine est un **build multi-étapes** avec cibles **`fro
 
 Indicateurs complémentaires (capture SonarCloud) : **Reliability : C, 11** ; **Duplications : 2.5%**.
 
-*Pour la soutenance : insérer ici des valeurs chiffrées ou des captures d’écran (voir **Annexes**).*
+Captures SonarQube associées (preuves) :
+`screenshots/sonarqube-metrics-2026-03-25.png` (métriques globales) et `screenshots/sonarqube-issues-2026-03-25.png` (issues).
 
 ### 5.2 Analyse des risques
 
@@ -305,7 +306,16 @@ Les durées des jobs **Backend – Build & Tests** et **Frontend – Build & Tes
 ## Annexes (optionnelles)
 
 - Captures **SonarQube** (Quality Gate, issues).
+- Capture SonarQube - métriques globales : `screenshots/sonarqube-metrics-2026-03-25.png`
+
+  ![SonarQube - métriques globales](screenshots/sonarqube-metrics-2026-03-25.png)
+- Capture SonarQube - issues (blocages, smells, etc.) : `screenshots/sonarqube-issues-2026-03-25.png`
+
+  ![SonarQube - issues](screenshots/sonarqube-issues-2026-03-25.png)
 - Captures **Kibana** / exemples de requêtes sur les logs.
+- Capture Kibana (MicroCRM Logs, exemple de requête et résultats) : `screenshots/kibana-microcrm-logs-2026-03-25.png`
+  
+  ![Kibana - MicroCRM Logs](screenshots/kibana-microcrm-logs-2026-03-25.png)
 - Extraits du **workflow** ou liens vers runs Actions représentatifs.
 - **Commandes utiles** : voir § 2.2 et README.
 
