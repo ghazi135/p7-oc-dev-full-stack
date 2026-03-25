@@ -319,7 +319,7 @@ Les durées des jobs **Backend – Build & Tests** et **Frontend – Build & Tes
 - Capture GitHub Actions (run pipeline CI/CD : build/tests, Docker images, release) : `screenshots/github-actions-ci-cd-run-2026-03-25.png`
   
   ![GitHub Actions - CI/CD run](screenshots/github-actions-ci-cd-run-2026-03-25.png)
-- Extraits du **workflow** ou liens vers runs Actions représentatifs.
+
 - **Commandes utiles** : voir § 2.2 et README.
 
 ---

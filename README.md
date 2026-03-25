@@ -1,6 +1,4 @@
-<p align="center">
-   <img src="./front/src/favicon.png" width="192px" />
-</p>
+
 
 # MicroCRM (P7 - Développeur Full-Stack - Java et Angular - Mettez en œuvre l'intégration et le déploiement continu d'une application Full-Stack)
 
@@ -8,8 +6,8 @@ MicroCRM est une application de démonstration basique ayant pour objectif de se
 
 L'application MicroCRM est une implémentation simplifiée d'un ["CRM" (Customer Relationship Management)](https://fr.wikipedia.org/wiki/Gestion_de_la_relation_client). Les fonctionnalités sont limitées à la création, édition et la visualisations des individus liés à des organisations.
 
-![Page d'accueil](./misc/screenshots/screenshot_1.png)
-![Édition de la fiche d'un individu](./misc/screenshots/screenshot_2.png)
+Page d'accueil
+Édition de la fiche d'un individu
 
 ---
 
@@ -17,38 +15,30 @@ L'application MicroCRM est une implémentation simplifiée d'un ["CRM" (Customer
 
 ### Repo GitHub
 
-| Livrable | Emplacement |
-|----------|-------------|
-| **Workflow CI/CD** | [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml) |
-| **Dockerfile(s)** | [Dockerfile](Dockerfile) à la racine (multi-cibles : `front`, `back`, `standalone`) |
-| **README** | Ce fichier : choix techniques et instructions d'exécution |
+
+| Livrable           | Emplacement                                                                         |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| **Workflow CI/CD** | [.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)                          |
+| **Dockerfile(s)**  | [Dockerfile](Dockerfile) à la racine (multi-cibles : `front`, `back`, `standalone`) |
+| **README**         | Ce fichier : choix techniques et instructions d'exécution                           |
+
 
 ### Documentation de CI/CD complète (mission)
 
 La mission demande « *Une documentation de CI/CD complète contenant* » les 8 éléments ci-dessous. **Un seul fichier** les regroupe : **[docs/DOCUMENTATION-CICD-LIVRABLE.md](docs/DOCUMENTATION-CICD-LIVRABLE.md)** — structuré selon le **template de documentation technique P7 Full-Stack** (Introduction **§ 1**, puis ordre : pipeline **§ 2**, Docker **§ 3**, tests **§ 4**, sécurité **§ 5**, monitoring/KPI **§ 6**, sauvegarde **§ 7**, mises à jour **§ 8**, conclusion **§ 9**).
 
-| Exigence (énoncé mission) | Section dans la documentation |
-|---------------------------|-------------------------------|
-| Partie 1 – Étapes de mise en œuvre CI/CD | **§ 2** |
-| Partie 1 – Plan de conteneurisation et déploiement | **§ 3** |
-| Partie 1 – Plan de testing périodique | **§ 4** |
-| Partie 2 – KPI proposés et métriques | **§ 6.1** (DORA), **§ 6.2** (KPI) |
-| Partie 2 – Analyse des métriques | **§ 6.3** |
-| Partie 2 – Plan de sécurité | **§ 5** |
-| Partie 2 – Plan de sauvegarde des données | **§ 7** |
-| Partie 2 – Plan des mises à jour | **§ 8** |
 
-### Documents de support (détails par thème)
+| Exigence (énoncé mission)                          | Section dans la documentation     |
+| -------------------------------------------------- | --------------------------------- |
+| Partie 1 – Étapes de mise en œuvre CI/CD           | **§ 2**                           |
+| Partie 1 – Plan de conteneurisation et déploiement | **§ 3**                           |
+| Partie 1 – Plan de testing périodique              | **§ 4**                           |
+| Partie 2 – KPI proposés et métriques               | **§ 6.1** (DORA), **§ 6.2** (KPI) |
+| Partie 2 – Analyse des métriques                   | **§ 6.3**                         |
+| Partie 2 – Plan de sécurité                        | **§ 5**                           |
+| Partie 2 – Plan de sauvegarde des données          | **§ 7**                           |
+| Partie 2 – Plan des mises à jour                   | **§ 8**                           |
 
-| Document | Thème |
-|----------|--------|
-| [docs/PLANS-CICD.md](docs/PLANS-CICD.md) | Plan de testing périodique, plan de sécurité (CI), principes de conteneurisation et déploiement. |
-| [docs/PLAN-SECURITE-FINAL.md](docs/PLAN-SECURITE-FINAL.md) | Vulnérabilités, règles critiques, couverture, recommandations sécurité. |
-| [docs/PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md](docs/PLANS-DEPLOIEMENT-SAUVEGARDE-MISE-A-JOUR.md) | Plan de déploiement, plan de sauvegarde des données, plan des mises à jour. |
-| [docs/METRIQUES-DORA-KPI.md](docs/METRIQUES-DORA-KPI.md) | Métriques DORA, KPI opérationnels, méthode de calcul et analyse. |
-| [docs/DOCUMENTATION-TECHNIQUE-FINALE.md](docs/DOCUMENTATION-TECHNIQUE-FINALE.md) | Synthèse métriques, KPI, résultats SonarQube, observations logs/dashboards, recommandations (analyse des métriques). |
-| [docs/DOCKER-COMPOSE.md](docs/DOCKER-COMPOSE.md) | Orchestration des services, commandes docker-compose. |
-| [docs/ELK.md](docs/ELK.md) | Stack ELK (monitoring), centralisation des logs, Kibana. |
 
 ---
 
@@ -81,28 +71,23 @@ Ce [monorepo](https://en.wikipedia.org/wiki/Monorepo) contient les 2 composantes
 ##### Procédure
 
 1. Se positionner dans le répertoire `back` avec une invite de commande:
-
-   ```shell
+  ```shell
    cd back
-   ```
-
+  ```
 2. Construire le JAR:
-
-   ```shell
+  ```shell
    # Sur Linux
    ./gradlew build
 
    # Sur Windows
    gradlew.bat build
-   ```
-
+  ```
 3. Démarrer le service:
-
-   ```shell
+  ```shell
    java -jar build/libs/microcrm-0.0.1-SNAPSHOT.jar
-   ```
+  ```
 
-Puis ouvrir l'URL http://localhost:8080 dans votre navigateur.
+Puis ouvrir l'URL [http://localhost:8080](http://localhost:8080) dans votre navigateur.
 
 #### Client
 
@@ -113,24 +98,19 @@ Puis ouvrir l'URL http://localhost:8080 dans votre navigateur.
 ##### Procédure
 
 1. Se positionner dans le répertoire `front` avec une invite de commande:
-
-   ```shell
+  ```shell
    cd front
-   ```
-
+  ```
 2. (La première fois seulement) Installer les dépendances NodeJS:
-
-   ```shell
+  ```shell
    npm install
-   ```
-
+  ```
 3. Démarrer le service de développement:
-
-   ```shell
+  ```shell
    npx @angular/cli serve
-   ```
+  ```
 
-Puis ouvrir l'URL http://localhost:4200 dans votre navigateur.
+Puis ouvrir l'URL [http://localhost:4200](http://localhost:4200) dans votre navigateur.
 
 ### Exécution des tests
 
@@ -172,7 +152,7 @@ docker build --target front -t orion-microcrm-front:latest .
 docker run -it --rm -p 80:80 -p 443:443 orion-microcrm-front:latest
 ```
 
-L'application sera disponible sur https://localhost.
+L'application sera disponible sur [https://localhost](https://localhost).
 
 #### Serveur
 
@@ -188,7 +168,7 @@ docker build --target back -t orion-microcrm-back:latest .
 docker run -it --rm -p 8080:8080 orion-microcrm-back:latest
 ```
 
-L'API sera disponible sur http://localhost:8080.
+L'API sera disponible sur [http://localhost:8080](http://localhost:8080).
 
 #### Tout en un
 
@@ -202,7 +182,7 @@ docker build --target standalone -t orion-microcrm-standalone:latest .
 docker run -it --rm -p 8080:8080 -p 80:80 -p 443:443 orion-microcrm-standalone:latest
 ```
 
-L'application sera disponible sur https://localhost et l'API sur http://localhost:8080.
+L'application sera disponible sur [https://localhost](https://localhost) et l'API sur [http://localhost:8080](http://localhost:8080).
 
 ---
 
@@ -236,8 +216,8 @@ Lancer l’application avec les services orchestrés :
 docker-compose up --build
 ```
 
-- **Front** : http://localhost (80) ou https://localhost (443).
-- **Back** : http://localhost:8080.
+- **Front** : [http://localhost](http://localhost) (80) ou [https://localhost](https://localhost) (443).
+- **Back** : [http://localhost:8080](http://localhost:8080).
 
 Image tout-en-un (front + back dans un seul conteneur) :
 
@@ -266,20 +246,22 @@ docker-compose -f docker-compose.with-elk.yml up --build -d
 
 ### URLs des services
 
-| Service | URL |
-|---------|-----|
-| **Application (front)** | http://localhost |
-| **API (back)** | http://localhost:8080 |
-| **Kibana** | http://localhost:5601 |
-| **Elasticsearch** | http://localhost:9200 |
+
+| Service                 | URL                                            |
+| ----------------------- | ---------------------------------------------- |
+| **Application (front)** | [http://localhost](http://localhost)           |
+| **API (back)**          | [http://localhost:8080](http://localhost:8080) |
+| **Kibana**              | [http://localhost:5601](http://localhost:5601) |
+| **Elasticsearch**       | [http://localhost:9200](http://localhost:9200) |
+
 
 ### Configurer Kibana pour voir les logs
 
-1. Ouvrir **http://localhost:5601** (attendre 1–2 min si Kibana démarre).
+1. Ouvrir **[http://localhost:5601](http://localhost:5601)** (attendre 1–2 min si Kibana démarre).
 2. Menu **☰** → **Stack Management** → **Data Views** → **Create data view**.
-3. **Name** : `MicroCRM Logs` | **Index pattern** : `microcrm-logs-*` | **Timestamp field** : `@timestamp` → **Save**.
+3. **Name** : `MicroCRM Logs` | **Index pattern** : `microcrm-logs-`* | **Timestamp field** : `@timestamp` → **Save**.
 4. Menu **☰** → **Discover** → sélectionner la data view **MicroCRM Logs**.
-5. Utiliser l'application (http://localhost) pour générer des logs, puis rafraîchir Discover.
+5. Utiliser l'application ([http://localhost](http://localhost)) pour générer des logs, puis rafraîchir Discover.
 
 ### Arrêter et relancer
 
@@ -296,15 +278,9 @@ docker-compose -f docker-compose.with-elk.yml up -d
 - `docker-compose.with-elk.yml` : app (back, front) + ELK. Le back envoie ses logs à Logstash via le profil Spring `elk`.
 - `elk/logstash/pipeline/logstash.conf` : pipeline Logstash (réception logs TCP → Elasticsearch).
 
-<details>
-<summary>Option : ELK seul (sans application)</summary>
+Option : ELK seul (sans application)
 
 ```shell
 docker-compose -f docker-compose-elk.yml up -d
 ```
-
-</details>
-
-Voir [docs/ELK.md](docs/ELK.md) pour plus de détails.
-
 
