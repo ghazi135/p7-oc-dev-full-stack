@@ -207,11 +207,11 @@ Les durées des jobs **Backend – Build & Tests** et **Frontend – Build & Tes
 
 | KPI | Calcul / source | Objectif |
 |-----|-----------------|----------|
-| Temps de build back | Durée moyenne du job backend | Réduire (cache Gradle déjà activé) |
-| Temps de build front | Durée moyenne du job frontend | Réduire (cache npm) |
-| **Temps d’exécution des tests** | Part du job consacrée aux steps `test` (back : Gradle test ; front : Karma) | Stabiliser et surveiller les régressions de perf |
+| Temps de build back | Durée moyenne du job backend | Réduire (observé : ~38s sur le run `ci-cd.yml` fourni) |
+| Temps de build front | Durée moyenne du job frontend | Réduire (observé : ~52s sur le run `ci-cd.yml` fourni) |
+| **Temps d’exécution des tests** | Part du job consacrée aux steps `test` (back : Gradle test ; front : Karma) (observé : back 10.4s ; front 13s sur le run `ci-cd.yml` fourni) | Stabiliser et surveiller les régressions de perf |
 | Taux de succès CI | Runs verts / runs totaux sur `main` | Viser 100 % |
-| Erreurs dans les logs | Comptage niveau ERROR dans ELK / Kibana (`microcrm-logs-*`) | Détecter les pics |
+| Erreurs dans les logs | Comptage niveau ERROR dans ELK / Kibana (`microcrm-logs-*`) | Détecter les pics (observé sur la fenêtre § 6.1 : 0) |
 
 ### 6.3 Analyse synthétique du monitoring
 
