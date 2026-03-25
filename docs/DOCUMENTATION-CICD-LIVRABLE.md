@@ -159,10 +159,12 @@ Le **Dockerfile** à la racine est un **build multi-étapes** avec cibles **`fro
 
 | Catégorie | Ce qu’il faut y mettre | Où les lire |
 |-----------|-------------------------|-------------|
-| Vulnérabilités | Liste ou synthèse des findings | SonarCloud → Security |
-| Code smells critiques | Issues élevées / hotspots | Issues, filtres sévérité |
-| Zones de complexité | Fichiers ou modules | Métriques complexité cognitive |
-| Couverture | % lignes / branches | Lié aux rapports JaCoCo + LCOV |
+| Vulnérabilités | **Security : A** ; **0** (aucune vulnérabilité bloquante remontée dans la synthèse) | SonarCloud → Security |
+| Code smells critiques | **Maintainability : A** ; **43** issues (maintenabilité) ; **Hotspots reviewed : E, 0.0%** | Issues, filtres sévérité |
+| Zones de complexité | **Cognitive Complexity : 18** (Back: 3, Front: 15) ; Cyclomatic Complexity : 91 | SonarCloud/SonarQube → Measures → Complexity |
+| Couverture | **Coverage : 37.4%** (lignes/branches) | Lié aux rapports JaCoCo + LCOV |
+
+Indicateurs complémentaires (capture SonarCloud) : **Reliability : C, 11** ; **Duplications : 2.5%**.
 
 *Pour la soutenance : insérer ici des valeurs chiffrées ou des captures d’écran (voir **Annexes**).*
 
@@ -194,10 +196,10 @@ Références utiles : [Règles SonarSource](https://rules.sonarsource.com/), [OW
 
 | Métrique | Définition | Méthode de calcul (indicative) | Valeurs observées |
 |----------|------------|--------------------------------|-------------------|
-| **Lead Time for Changes** | Délai commit → prod utilisable | Horodatage merge `main` → fin du job CD + déploiement manuel éventuel | *[À renseigner : ex. médiane sur N runs GitHub Actions + délai ops]* |
-| **Deployment Frequency** | Nombre de mises en prod sur une période | Compter les déploiements réels ou les pushes `main` avec CD réussi | *[À renseigner]* |
-| **MTTR** | Temps moyen de rétablissement après incident | Durée entre alerte / ticket et service rétabli | *[À renseigner ; peut s’appuyer sur logs ELK si déployé]* |
-| **Change Failure Rate** | % de déploiements suivis d’un incident ou rollback | (Déploiements défaillants / déploiements totaux) × 100 | *[À renseigner]* |
+| **Lead Time for Changes** | Délai commit → prod utilisable | Horodatage merge `main` → fin du job CD + déploiement manuel éventuel | Moyenne ≈ `5,20 min` ; médiane ≈ `5,55 min` (3 runs `ci-cd.yml` success sur `master`, fenêtre `2026-03-23T05:35:21Z` → `2026-03-23T05:43:55Z`) |
+| **Deployment Frequency** | Nombre de mises en prod sur une période | Compter les déploiements réels ou les pushes `main` avec CD réussi | `3` déploiements (runs workflow success `master`) sur la journée `23/03/2026` (UTC) |
+| **MTTR** | Temps moyen de rétablissement après incident | Durée entre alerte / ticket et service rétabli | Non calculable sur la fenêtre : `0` incident `ERROR` détecté sur `microcrm-logs-*/@timestamp` entre `2026-03-23T05:35:21Z` et `2026-03-23T05:43:55Z` |
+| **Change Failure Rate** | % de déploiements suivis d’un incident ou rollback | (Déploiements défaillants / déploiements totaux) × 100 | `0/3` = `0%` (aucun `ERROR` détecté sur la fenêtre observée, définition incident = présence d’au moins un log `level=ERROR`) |
 
 Les durées des jobs **Backend – Build & Tests** et **Frontend – Build & Tests** dans l’onglet Actions servent de base concrète pour estimer le **Lead Time** côté pipeline.
 
@@ -215,7 +217,7 @@ Les durées des jobs **Backend – Build & Tests** et **Frontend – Build & Tes
 
 - **Tendances :** comparer sur 2–4 semaines les durées de workflow, le taux d’échec et le volume d’erreurs dans les logs.
 - **Points forts :** parallélisation back/front, caches, images reproductibles.
-- **Points à améliorer :** lenteurs résiduelles (tests front, build Docker), couverture, dette Sonar.
+- **Points à améliorer :** lenteurs résiduelles (tests front, build Docker), **couverture 37.4%** et **0.0% hotspots reviewed** ; dette Sonar à suivre via les issues.
 - **Dashboards :** sous **Option B**, Kibana sur l’index des logs applicatifs — visualisations volumétrie, niveaux de log, recherche par corrélation (voir README et captures sous `docs/screenshots/` si présentes).
 - **Alertes :** à définir dans la stack de monitoring (seuils sur taux d’erreur ou absence de logs) ; documenter ici les règles une fois configurées.
 
